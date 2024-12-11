@@ -6,7 +6,7 @@ public class StreamsIOService implements IOService {
     private final PrintStream printStream;
 
     public StreamsIOService(PrintStream printStream) {
-
+        // printStream задаётся из spring-context.xml
         this.printStream = printStream;
     }
 

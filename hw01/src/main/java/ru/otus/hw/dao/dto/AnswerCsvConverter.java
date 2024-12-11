@@ -5,6 +5,9 @@ import ru.otus.hw.domain.Answer;
 
 public class AnswerCsvConverter extends AbstractCsvConverter {
 
+    /**
+     * Создание объекта - Ответ
+     */
     @Override
     public Object convertToRead(String value) {
         var valueArr = value.split("%");
