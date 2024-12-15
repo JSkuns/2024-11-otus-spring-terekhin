@@ -23,8 +23,8 @@ import java.util.List;
 public class CsvQuestionDao implements QuestionDao {
 
     private final TestFileNameProvider fileNameProvider;
-    private static final String ERROR_MSG = "Error: Problems with the file %s";
-    private static final char SEPARATOR_SEMICOLON = ';';
+    final static String ERROR_MSG = "Error: Problems with the file %s";
+    final static char SEPARATOR_SEMICOLON = ';';
 
     /**
      * Найти все вопросы в 'questions.csv'
