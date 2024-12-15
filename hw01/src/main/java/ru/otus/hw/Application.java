@@ -1,8 +1,6 @@
-package ru.otus.hw;
-
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
-import ru.otus.hw.service.TestRunnerService;
+import service.TestRunnerService;
 
 /**
  * Основной класс

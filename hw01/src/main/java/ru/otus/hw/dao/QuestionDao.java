@@ -1,6 +1,6 @@
-package ru.otus.hw.dao;
+package dao;
 
-import ru.otus.hw.domain.Question;
+import domain.Question;
 
 import java.util.List;
 

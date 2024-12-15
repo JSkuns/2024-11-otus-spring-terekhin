@@ -1,4 +1,4 @@
-package ru.otus.hw.service;
+package service;
 
 public interface TestRunnerService {
     void run();

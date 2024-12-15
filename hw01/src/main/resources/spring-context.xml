@@ -6,17 +6,17 @@
         http://www.springframework.org/schema/beans/spring-beans.xsd
         http://www.springframework.org/schema/util https://www.springframework.org/schema/util/spring-util.xsd">
 
-    <bean id="ioService" class="ru.otus.hw.service.StreamsIOService">
+    <bean id="ioService" class="service.StreamsIOService">
         <constructor-arg index="0">
             <util:constant static-field="java.lang.System.out"/>
         </constructor-arg>
     </bean>
 
-    <bean id="testService" class="ru.otus.hw.service.TestServiceImpl">
+    <bean id="testService" class="service.TestServiceImpl">
         <constructor-arg index="0" ref="ioService"/>
     </bean>
 
-    <bean id="testRunnerService" class="ru.otus.hw.service.TestRunnerServiceImpl">
+    <bean id="testRunnerService" class="service.TestRunnerServiceImpl">
         <constructor-arg index="0" ref="testService"/>
     </bean>
 

@@ -1,4 +1,4 @@
-package ru.otus.hw.config;
+package config;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

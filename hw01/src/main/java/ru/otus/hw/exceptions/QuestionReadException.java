@@ -1,4 +1,4 @@
-package ru.otus.hw.exceptions;
+package exceptions;
 
 /**
  * Ошибка при чтении из csv

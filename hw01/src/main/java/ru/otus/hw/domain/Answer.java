@@ -1,4 +1,4 @@
-package ru.otus.hw.domain;
+package domain;
 
 /**
  * Класс - Ответ
