@@ -23,8 +23,6 @@ import java.util.List;
 public class CsvQuestionDao implements QuestionDao {
 
     private final TestFileNameProvider fileNameProvider;
-    final static String ERROR_MSG = "Error: Problems with the file %s";
-    final static char SEPARATOR_SEMICOLON = ';';
 
     /**
      * Найти все вопросы в 'questions.csv'
@@ -64,7 +62,7 @@ public class CsvQuestionDao implements QuestionDao {
      * Выбрасываем QuestionReadException
      */
     private void throwQuestionReadException(TestFileNameProvider fileNameProvider, Exception ex) {
-        var errMsg = String.format(ERROR_MSG, fileNameProvider.getTestFileName());
+        var errMsg = String.format("Error: Problems with the file %s", fileNameProvider.getTestFileName());
         throw new QuestionReadException(errMsg, ex);
     }
 
@@ -73,7 +71,7 @@ public class CsvQuestionDao implements QuestionDao {
      */
     private CSVParser getCSVParser() {
         return new CSVParserBuilder()
-                .withSeparator(SEPARATOR_SEMICOLON)
+                .withSeparator(';')
                 .build();
     }
 
