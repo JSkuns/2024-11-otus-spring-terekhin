@@ -15,7 +15,6 @@ public class ResultServiceImpl implements ResultService {
 
     @Override
     public void showResult(TestResult testResult) {
-        ioService.printLine("");
         ioService.printLine("Test results: ");
         ioService.printFormattedLine("Student: %s", testResult.getStudent().getFullName());
         ioService.printFormattedLine("Answered questions count: %d", testResult.getAnsweredQuestions().size());

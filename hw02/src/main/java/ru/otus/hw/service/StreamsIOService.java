@@ -43,6 +43,11 @@ public class StreamsIOService implements IOService {
         return scanner.nextLine();
     }
 
+    /**
+     * Метод который вернёт intValue из диапазона, если пройдёт все проверки
+     * Иначе будет или Exception (если НЕ цифра) или errorMessage (если такой цифры нет в диапазоне)
+     * Указано кол-во попыток MAX_ATTEMPTS
+     */
     @Override
     public int readIntForRange(int min, int max, String errorMessage) {
         for (int i = 0; i < MAX_ATTEMPTS; i++) {
@@ -52,7 +57,7 @@ public class StreamsIOService implements IOService {
                 if (intValue < min || intValue > max) {
                     throw new IllegalArgumentException();
                 }
-                return intValue;
+                return intValue; // Точка выхода
             } catch (IllegalArgumentException e) {
                 printLine(errorMessage);
             }

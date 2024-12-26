@@ -26,41 +26,37 @@ public class TestServiceImpl implements TestService {
         var testResult = new TestResult(student);
 
         for (var question : questions) {
-            var isAnswerValid = false; // Валидный ли ответ
             ioService.printLine(question.text()); // Задаём вопрос
-            var answersList = question.answers(); // Списко ответов
-            outputPossibleAnswers(answersList); // Выводим возможные варианты ответов
-            ioService.printLine("Enter the response number: "); //
-            int chosenAnswerIndex = getAnswer(); // Считываем с консоли вариант ответа
-
-            if (chosenAnswerIndex >= 0 && chosenAnswerIndex < answersList.size()) {
-                isAnswerValid = answersList.get(chosenAnswerIndex).isCorrect();
-                ioService.printLine(isAnswerValid ? "Correctly!\n" : "Wrong.\n");
-            } else {
-                ioService.printLine("Incorrect input!\n");
-            }
+            var answersList = question.answers(); // Список ответов
+            outputPossibleAnswers(answersList); // Варианты ответов
+            var chosenAnswerIndex = getChosenAnswerIndex(answersList); // Выбираем ответ
+            var isAnswerValid = answersList.get(chosenAnswerIndex).isCorrect(); // Валидный ли ответ?
+            ioService.printLine(isAnswerValid ? "Correctly!\n" : "Wrong!\n"); // Правильно?
 
             testResult.applyAnswer(question, isAnswerValid);
         }
         return testResult;
     }
 
+    /**
+     * Выводим возможные варианты ответов
+     */
     private void outputPossibleAnswers(List<Answer> answersList) {
         AtomicInteger answerNumber = new AtomicInteger(1); // Счётчик
         answersList.forEach(answerElement -> {
             ioService.printLine(" " + answerNumber + ". " + answerElement.text()); // Выводим варианты ответов
             answerNumber.getAndIncrement(); // Увеличение счётчика
         });
-
     }
 
-    private int getAnswer() {
-        int chosenAnswerIndex;
-        try {
-            chosenAnswerIndex = Integer.parseInt(ioService.readString()) - 1;
-        } catch (NumberFormatException ex) {
-            chosenAnswerIndex = -1; // Если введён не Integer
-        }
+    /**
+     * Получим выбранный ответ, или ошибку
+     * Проверки заложены в 'ioService.readIntForRange'
+     */
+    private int getChosenAnswerIndex(List<Answer> answersList) {
+        ioService.printLine("Enter the response number: ");
+        int chosenAnswerIndex = ioService.readIntForRange(1, answersList.size(), "Incorrect input!");
+        chosenAnswerIndex--; // Чтобы поиск в списке был корректен
         return chosenAnswerIndex;
     }
 
