@@ -3,6 +3,11 @@ package ru.otus.hw.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+/**
+ * Этот компонент вызывается из
+ * {@link ru.otus.hw.service.StudentServiceImpl}
+ * {@link ru.otus.hw.service.TestServiceImpl}
+ */
 @RequiredArgsConstructor
 @Service
 public class LocalizedIOServiceImpl implements LocalizedIOService {

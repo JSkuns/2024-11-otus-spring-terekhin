@@ -3,6 +3,10 @@ package ru.otus.hw.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+/**
+ * Этот компонент вызывается из
+ * {@link ru.otus.hw.Application}
+ */
 @Service
 @RequiredArgsConstructor
 public class TestRunnerServiceImpl implements TestRunnerService {
