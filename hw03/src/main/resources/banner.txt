@@ -1,0 +1,7 @@
+
+${AnsiColor.GREEN}${AnsiBackground.BLACK}__________            __________
+\__    __/____   ____ \__    __/
+  |    | / __ \ / ___\  |    |
+  |    | \  __/ \ \___  |    |
+  |____|  \___   \___|  |____|
+${AnsiBackground.DEFAULT}${AnsiColor.DEFAULT}
