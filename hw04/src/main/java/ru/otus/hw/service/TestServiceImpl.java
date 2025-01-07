@@ -8,7 +8,6 @@ import ru.otus.hw.domain.Student;
 import ru.otus.hw.domain.TestResult;
 
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Этот компонент вызывается из
@@ -51,11 +50,10 @@ public class TestServiceImpl implements TestService {
      * Выводим возможные варианты ответов
      */
     private void printPossibleAnswers(List<Answer> answersList) {
-        AtomicInteger answerNumber = new AtomicInteger(1); // Счётчик
-        answersList.forEach(answerElement -> {
-            ioService.printLine(" " + answerNumber + ". " + answerElement.text()); // Выводим варианты ответов
-            answerNumber.getAndIncrement(); // Увеличение счётчика
-        });
+        for (int i = 0; i < answersList.size(); i++) {
+            var answerElement = answersList.get(i);
+            ioService.printLine(" " + (i + 1) + ". " + answerElement.text());
+        }
     }
 
     /**

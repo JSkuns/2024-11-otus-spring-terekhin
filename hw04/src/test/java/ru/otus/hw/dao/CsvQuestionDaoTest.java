@@ -10,9 +10,10 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import ru.otus.hw.config.AppProperties;
 import ru.otus.hw.exceptions.QuestionReadException;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@SpringBootTest(properties = {"spring.shell.interactive.enabled=false"})
+@SpringBootTest(classes = CsvQuestionDao.class)
 @ExtendWith(SpringExtension.class)
 class CsvQuestionDaoTest {
 
@@ -33,6 +34,18 @@ class CsvQuestionDaoTest {
 
         // Assert
         assertThrows(QuestionReadException.class, () -> csvQuestionDao.findAll());
+    }
+
+    @Test
+    void testCsvFileWillFoundAndMethodReturnListOfQuestions() {
+        // Arrange
+        Mockito.when(appPropertiesMock.getTestFileName()).thenReturn("questions.csv");
+
+        // Act
+        var list = csvQuestionDao.findAll();
+
+        // Assert
+        assertNotNull(list);
     }
 
 }
