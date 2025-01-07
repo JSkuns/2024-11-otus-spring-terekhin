@@ -19,6 +19,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Этот компонент вызывается из TestServiceImpl.java
@@ -37,18 +38,15 @@ public class CsvQuestionDao implements QuestionDao {
         ClassLoader classLoader = getClassLoader();
         List<QuestionDto> questionDtoList = null;
         try (
-                InputStream is = classLoader.getResourceAsStream(fileNameProvider.getTestFileName())) {
-            if (is == null) {
-                throwQuestionReadException(fileNameProvider, null);
-            }
+                InputStream is = Objects.requireNonNull(classLoader.getResourceAsStream(fileNameProvider.getTestFileName()))
+        ) {
             CSVParser parser = getCSVParser();
             CSVReader csvReader = getCSVReader(parser, is);
             ColumnPositionMappingStrategy<QuestionDto> strategy = getStrategy();
             strategy.setType(QuestionDto.class);
             questionDtoList = getQuestionDtoList(csvReader, strategy);
 
-        } catch (
-                IOException ex) {
+        } catch (NullPointerException | IOException ex) {
             throwQuestionReadException(fileNameProvider, ex);
         }
 

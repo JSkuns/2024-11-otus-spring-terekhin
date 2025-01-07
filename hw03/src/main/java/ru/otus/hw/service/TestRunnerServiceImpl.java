@@ -23,4 +23,10 @@ public class TestRunnerServiceImpl implements TestRunnerService {
         var testResult = testService.executeTestFor(student);
         resultService.showResult(testResult);
     }
+
+    @Override
+    public void run(String... args) throws Exception {
+        run();
+    }
+
 }
