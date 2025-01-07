@@ -24,4 +24,9 @@ public class TestRunnerServiceImpl implements TestRunnerService {
         resultService.showResult(testResult);
     }
 
+    @Override
+    public void run(String... args) throws Exception {
+        run();
+    }
+
 }
