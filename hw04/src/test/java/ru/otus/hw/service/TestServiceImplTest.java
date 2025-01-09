@@ -2,7 +2,10 @@ package ru.otus.hw.service;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import ru.otus.hw.dao.QuestionDao;
 import ru.otus.hw.domain.Answer;
 import ru.otus.hw.domain.Question;
@@ -13,11 +16,19 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+@SpringBootTest(classes = TestServiceImpl.class)
+@ExtendWith(SpringExtension.class)
 class TestServiceImplTest {
 
     private TestServiceImpl service;
     private Student student;
     private Question question;
+
+    @MockBean
+    private LocalizedIOService ioServiceMock;
+
+    @MockBean
+    private QuestionDao questionDaoMock;
 
     @BeforeEach
     void setup() {
@@ -28,10 +39,7 @@ class TestServiceImplTest {
         );
         question = new Question("question1", answersList);
 
-        LocalizedIOService ioServiceMock = Mockito.mock(LocalizedIOService.class);
-        QuestionDao daoMock = Mockito.mock(QuestionDao.class);
-
-        service = new TestServiceImpl(ioServiceMock, daoMock);
+        service = new TestServiceImpl(ioServiceMock, questionDaoMock);
     }
 
     @Test
