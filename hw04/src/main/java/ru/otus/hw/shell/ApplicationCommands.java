@@ -1,7 +1,6 @@
 package ru.otus.hw.shell;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.shell.command.annotation.Command;
 import org.springframework.shell.standard.commands.Quit;
 import ru.otus.hw.service.LocalizedIOService;
@@ -12,12 +11,12 @@ public class ApplicationCommands implements Quit.Command {
 
     private final LocalizedIOService ioService;
 
-    private final ApplicationContext context;
+    private final TestRunnerService testRunnerService;
 
     @Autowired
-    public ApplicationCommands(LocalizedIOService ioService, ApplicationContext context) {
+    public ApplicationCommands(LocalizedIOService ioService, TestRunnerService testRunnerService) {
         this.ioService = ioService;
-        this.context = context;
+        this.testRunnerService = testRunnerService;
     }
 
     /**
@@ -26,7 +25,6 @@ public class ApplicationCommands implements Quit.Command {
     @Command(alias = "r", command = "run", description = "Run application.")
     public void runApp() {
         ioService.printLineLocalized("ApplicationCommands.starting.testing");
-        var testRunnerService = context.getBean(TestRunnerService.class);
         testRunnerService.run();
     }
 

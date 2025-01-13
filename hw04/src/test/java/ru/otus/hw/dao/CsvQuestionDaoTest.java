@@ -2,22 +2,19 @@ package ru.otus.hw.dao;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import ru.otus.hw.config.AppProperties;
 import ru.otus.hw.exceptions.QuestionReadException;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@SpringBootTest(classes = CsvQuestionDao.class)
-@ExtendWith(SpringExtension.class)
+@SpringBootTest(properties = {"spring.shell.interactive.enabled=false"})
 class CsvQuestionDaoTest {
 
-    @MockBean
+    @MockitoBean
     private AppProperties appPropertiesMock;
 
     private CsvQuestionDao csvQuestionDao;
