@@ -22,10 +22,6 @@ public class JdbcBookRepository implements BookRepository {
 
     private final NamedParameterJdbcTemplate jdbc;
 
-    private final AuthorRepository authorRepository;
-
-    private final GenreRepository genreRepository;
-
     private List<Genre> allGenres;
 
     private List<Author> allAuthors;
@@ -33,13 +29,8 @@ public class JdbcBookRepository implements BookRepository {
     /**
      * Конструктор
      */
-    public JdbcBookRepository(
-            NamedParameterJdbcTemplate jdbc,
-            AuthorRepository authorRepository,
-            GenreRepository genreRepository) {
+    public JdbcBookRepository(NamedParameterJdbcTemplate jdbc) {
         this.jdbc = jdbc;
-        this.authorRepository = authorRepository;
-        this.genreRepository = genreRepository;
     }
 
     /**
@@ -65,8 +56,8 @@ public class JdbcBookRepository implements BookRepository {
      * Чтобы уменьшить кол-во запросов к БД, найдём всех авторов и все жанры
      */
     private void findAllAuthorsAndGenres() {
-        allAuthors = authorRepository.findAll();
-        allGenres = genreRepository.findAll();
+        allAuthors = new JdbcAuthorRepository(jdbc).findAll();
+        allGenres = new JdbcGenreRepository(jdbc).findAll();
     }
 
     /**
