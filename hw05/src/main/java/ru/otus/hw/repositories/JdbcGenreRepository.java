@@ -1,8 +1,9 @@
 package ru.otus.hw.repositories;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 import ru.otus.hw.models.Genre;
 
@@ -15,52 +16,49 @@ import java.util.Optional;
 @Repository
 public class JdbcGenreRepository implements GenreRepository {
 
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
+    private final NamedParameterJdbcTemplate jdbc;
+
+    public JdbcGenreRepository(NamedParameterJdbcTemplate jdbc) {
+        this.jdbc = jdbc;
+    }
 
     /**
-     * Используется в {@link ru.otus.hw.services.GenreServiceImpl}
-     * А тот в свою очередь в {@link ru.otus.hw.commands.GenreCommands}
-     * Должны получить все жанры из БД
+     * Получить все жанры из БД
      */
     @Override
     public List<Genre> findAll() {
-
         String sql = "SELECT * FROM genres";
-
-        return jdbcTemplate.query(
-                sql,
-                new GnreRowMapper());
+        return jdbc.query(sql, new GnreRowMapper());
     }
 
     /**
-     * Используется в {@link ru.otus.hw.services.BookServiceImpl} при сохранении книги в БД
+     * Найти жанр по ID
      */
     @Override
     public Optional<Genre> findById(long id) {
-
-        String sql = "SELECT * FROM genres WHERE id = ?";
-
-        Genre genre = jdbcTemplate.queryForObject(sql, new GnreRowMapper(), id);
-
-        return Optional.of(Objects.requireNonNull(genre)); // NPE обрабатывается в BookServiceImpl
+        Genre genre;
+        String sql = "SELECT * FROM genres WHERE id = :id";
+        MapSqlParameterSource source = new MapSqlParameterSource();
+        source.addValue("id", id);
+        try {
+            genre = jdbc.queryForObject(sql, source, new GnreRowMapper());
+            Objects.requireNonNull(genre);
+        } catch (EmptyResultDataAccessException | NullPointerException ex) {
+            return Optional.empty();
+        }
+        return Optional.of(genre);
     }
 
     /**
-     * Mapper
+     * Маппер
      */
     private static class GnreRowMapper implements RowMapper<Genre> {
 
         @Override
         public Genre mapRow(ResultSet rs, int i) throws SQLException {
-            // Создаём жанр
             Genre genre = new Genre();
-
-            // Заполняем поля
-            genre.setId(rs.getLong("ID"));
-            genre.setName(rs.getString("NAME"));
-
-            // Вернём жанр
+            genre.setId(rs.getLong("id"));
+            genre.setName(rs.getString("name"));
             return genre;
         }
 

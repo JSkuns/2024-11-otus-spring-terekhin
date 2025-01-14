@@ -1,8 +1,9 @@
 package ru.otus.hw.repositories;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 import ru.otus.hw.models.Author;
 
@@ -15,52 +16,49 @@ import java.util.Optional;
 @Repository
 public class JdbcAuthorRepository implements AuthorRepository {
 
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
+    private final NamedParameterJdbcTemplate jdbc;
+
+    public JdbcAuthorRepository(NamedParameterJdbcTemplate jdbc) {
+        this.jdbc = jdbc;
+    }
 
     /**
-     * Используется в {@link ru.otus.hw.services.AuthorServiceImpl}
-     * А тот в свою очередь используется в {@link ru.otus.hw.commands.AuthorCommands}
-     * Должны получить всех авторов из БД
+     * Получить всех авторов из БД
      */
     @Override
     public List<Author> findAll() {
-
         String sql = "SELECT * FROM authors";
-
-        return jdbcTemplate.query(
-                sql,
-                new AuthorRowMapper());
+        return jdbc.query(sql, new AuthorRowMapper());
     }
 
     /**
-     * Используется в {@link ru.otus.hw.services.BookServiceImpl} при сохранении книги в БД
+     * Найти автора по ID
      */
     @Override
     public Optional<Author> findById(long id) {
-
-        String sql = "SELECT * FROM authors WHERE id = ?";
-
-        Author author = jdbcTemplate.queryForObject(sql, new AuthorRowMapper(), id);
-
-        return Optional.of(Objects.requireNonNull(author)); // NPE обрабатывается в BookServiceImpl
+        Author author;
+        String sql = "SELECT * FROM authors WHERE id = :id";
+        MapSqlParameterSource source = new MapSqlParameterSource();
+        source.addValue("id", id);
+        try {
+            author = jdbc.queryForObject(sql, source, new AuthorRowMapper());
+            Objects.requireNonNull(author);
+        } catch (EmptyResultDataAccessException | NullPointerException ex) {
+            return Optional.empty();
+        }
+        return Optional.of(author);
     }
 
     /**
-     * Mapper
+     * Маппер
      */
     private static class AuthorRowMapper implements RowMapper<Author> {
 
         @Override
         public Author mapRow(ResultSet rs, int i) throws SQLException {
-            // Создаём автора
             Author author = new Author();
-
-            // Заполняем поля
-            author.setId(rs.getLong("ID"));
-            author.setFullName(rs.getString("FULL_NAME"));
-
-            // Вернём автора
+            author.setId(rs.getLong("id"));
+            author.setFullName(rs.getString("full_name"));
             return author;
         }
 
