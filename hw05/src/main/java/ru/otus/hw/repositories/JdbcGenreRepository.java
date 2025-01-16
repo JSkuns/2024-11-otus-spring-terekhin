@@ -1,6 +1,5 @@
 package ru.otus.hw.repositories;
 
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -10,7 +9,6 @@ import ru.otus.hw.models.Genre;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 @Repository
@@ -36,17 +34,10 @@ public class JdbcGenreRepository implements GenreRepository {
      */
     @Override
     public Optional<Genre> findById(long id) {
-        Genre genre;
         String sql = "SELECT * FROM genres WHERE id = :id";
-        MapSqlParameterSource source = new MapSqlParameterSource();
-        source.addValue("id", id);
-        try {
-            genre = jdbc.queryForObject(sql, source, new GnreRowMapper());
-            Objects.requireNonNull(genre);
-        } catch (EmptyResultDataAccessException | NullPointerException ex) {
-            return Optional.empty();
-        }
-        return Optional.of(genre);
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("id", id);
+        return jdbc.query(sql, params, new GnreRowMapper()).stream().findFirst();
     }
 
     /**

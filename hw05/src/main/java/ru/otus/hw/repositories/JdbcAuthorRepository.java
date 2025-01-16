@@ -1,6 +1,5 @@
 package ru.otus.hw.repositories;
 
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -10,7 +9,6 @@ import ru.otus.hw.models.Author;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 @Repository
@@ -36,17 +34,10 @@ public class JdbcAuthorRepository implements AuthorRepository {
      */
     @Override
     public Optional<Author> findById(long id) {
-        Author author;
         String sql = "SELECT * FROM authors WHERE id = :id";
-        MapSqlParameterSource source = new MapSqlParameterSource();
-        source.addValue("id", id);
-        try {
-            author = jdbc.queryForObject(sql, source, new AuthorRowMapper());
-            Objects.requireNonNull(author);
-        } catch (EmptyResultDataAccessException | NullPointerException ex) {
-            return Optional.empty();
-        }
-        return Optional.of(author);
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("id", id);
+        return jdbc.query(sql, params, new AuthorRowMapper()).stream().findFirst();
     }
 
     /**
