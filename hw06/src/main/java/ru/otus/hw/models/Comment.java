@@ -1,23 +1,16 @@
 package ru.otus.hw.models;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Column;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.JoinColumn;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity(name = "comment")
+@Entity
 @Table(name = "comments")
 public class Comment {
 
@@ -28,11 +21,7 @@ public class Comment {
     @Column(name = "text", nullable = true, unique = false)
     private String text;
 
-    /*
-    У комментария, в нашем случае, может быть только одна книга,
-        а у книги может быть много комментариев.
-     */
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, targetEntity = Book.class)
+    @ManyToOne(cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
     @JoinColumn(name = "book_id", nullable = true, unique = false)
     private Book book;
 

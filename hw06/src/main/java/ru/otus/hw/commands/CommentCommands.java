@@ -8,8 +8,6 @@ import ru.otus.hw.services.CommentService;
 
 import java.util.stream.Collectors;
 
-// используется в Java для подавления предупреждений компилятора
-@SuppressWarnings({"SpellCheckingInspection", "unused"})
 @RequiredArgsConstructor
 @ShellComponent
 public class CommentCommands {
@@ -18,8 +16,8 @@ public class CommentCommands {
 
     private final CommentConverter commentConverter;
 
-    // (C)omment (B)y (B)ook (ID) // Example: cbbid 2
-    @ShellMethod(value = "Find comment by book Id", key = "cbbid")
+    // (C)omment by (B)ook (ID) // Example: cbid 2
+    @ShellMethod(value = "Find comment by book id", key = "cbid")
     public String findCommentByBookId(long bookId) {
         return commentService
                 .findAllCommentsByBookId(bookId)
@@ -28,8 +26,8 @@ public class CommentCommands {
                 .collect(Collectors.joining("," + System.lineSeparator()));
     }
 
-    // (C)omment (B)y (C)omment (ID) // Example: cbcid 2
-    @ShellMethod(value = "Find comment by Id", key = "cbcid")
+    // (C)omment by comment (ID) // Example: cid 2
+    @ShellMethod(value = "Find comment by id", key = "cid")
     public String findCommentById(long id) {
         return commentService
                 .findById(id)

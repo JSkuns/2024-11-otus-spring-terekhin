@@ -1,15 +1,20 @@
 package ru.otus.hw.repositories;
 
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceContext;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import ru.otus.hw.models.Author;
+import ru.otus.hw.models.Book;
 
 import java.util.List;
 import java.util.Optional;
 
 @Repository
-public class AuthorRepositoryImpl implements AuthorRepository {
+@AllArgsConstructor
+public class JpaAuthorRepository implements AuthorRepository {
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -18,9 +23,10 @@ public class AuthorRepositoryImpl implements AuthorRepository {
      * Получить всех авторов из БД
      */
     @Override
+    @Transactional(readOnly = true)
     public List<Author> findAll() {
         return entityManager
-                .createQuery("SELECT a FROM author a", Author.class)
+                .createQuery("SELECT a FROM Author a", Author.class)
                 .getResultList();
     }
 
@@ -28,13 +34,9 @@ public class AuthorRepositoryImpl implements AuthorRepository {
      * Найти автора по ID
      */
     @Override
+    @Transactional(readOnly = true)
     public Optional<Author> findById(long id) {
-        return entityManager
-                .createQuery("SELECT a FROM author a WHERE a.id = :id", Author.class)
-                .setParameter("id", id)
-                .getResultList()
-                .stream()
-                .findFirst();
+        return Optional.ofNullable(entityManager.find(Author.class, id));
     }
 
 }

@@ -4,6 +4,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.OneToOne;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -34,17 +35,19 @@ class ModelsCommonTest {
 
     @ParameterizedTest
     @MethodSource("getEntities")
+    @DisplayName("В доменной модели нет связей OneToOne")
     void shouldBeNoOneToOneRelationshipsInModelClasses(Class<?> entityClass) {
 
         var oneToOneRelationshipExists = Arrays.stream(entityClass.getDeclaredFields())
                 .anyMatch(f -> f.isAnnotationPresent(OneToOne.class));
         assertThat(oneToOneRelationshipExists)
-                .withFailMessage("В доменной модели ДЗ не предусмотрены связи OneToOne")
+                .withFailMessage("В доменной модели ДЗ не предусмотрены связи 'OneToOne'")
                 .isFalse();
     }
 
     @ParameterizedTest
     @MethodSource("getEntities")
+    @DisplayName("Все связи имеют 'FetchType' равный 'LAZY'")
     void shouldBeNoEagerRelationshipsInModelClasses(Class<?> entityClass) {
         boolean eagerFetchExists = Arrays.stream(entityClass.getDeclaredFields())
                 .map(f -> getRelationAnnotationArgumentValue(f, "fetch", FetchType.class))
@@ -57,6 +60,7 @@ class ModelsCommonTest {
 
     @ParameterizedTest
     @MethodSource("getEntities")
+    @DisplayName("Все двунаправленные связи настроены через 'mappedBy'")
     void shouldMappedForBidirectionalRelationshipsInModelClasses(Class<?> entityClass) {
         var relationsEntries = findAllRelationsEntry(entityClass);
         var hasBidirectionalRelationshipsWithoutMappedBy = relationsEntries.entrySet().stream()

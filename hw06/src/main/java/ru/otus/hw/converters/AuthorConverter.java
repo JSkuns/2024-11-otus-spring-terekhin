@@ -8,13 +8,15 @@ import ru.otus.hw.models.Author;
 public class AuthorConverter {
 
     public String authorToString(Author author) {
-        String fullName;
         try {
-            fullName = author.getFullName();
+            return "Id: %d, FullName: %s"
+                    .formatted(
+                            author.getId(),
+                            author.getFullName()
+                    );
         } catch (LazyInitializationException ex) {
             return "Id: %d".formatted(author.getId());
         }
-        return "Id: %d, FullName: %s".formatted(author.getId(), fullName);
     }
 
 }
