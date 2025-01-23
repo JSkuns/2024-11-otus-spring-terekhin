@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
+import ru.otus.hw.models.Genre;
 
 import java.util.Optional;
 
@@ -17,15 +18,39 @@ public class JpaGenreRepositoryTest {
     private GenreRepository genreRepository;
 
     @Test
-    @DisplayName("В БД нет записей с номером '-777'")
-    void expectedEmptyWhenNotFound() {
+    @DisplayName("Метод 'findById()'. В БД нет жанра с ID '-777'")
+    void emptyWhenNotFoundGenreById() {
+        // Assert
         Assertions.assertEquals(Optional.empty(), genreRepository.findById(-777));
     }
 
     @Test
-    @DisplayName("В БД есть запись с номером '1'")
-    void expectedNotEmpty() {
+    @DisplayName("Метод 'findById()'. В БД есть жанр с ID '1'")
+    void hasGenreById() {
+        // Assert
         Assertions.assertNotNull(genreRepository.findById(1));
+    }
+
+    @Test
+    @DisplayName("Метод 'findAll()'. В БД нет жанра с ID '-888'")
+    void inAllGenresHasNotGenre() {
+        // Arrange
+        var expectedGenre = new Genre(-888, "Genre_888");
+        // Act
+        var genresList = genreRepository.findAll();
+        // Assert
+        Assertions.assertFalse(genresList.contains(expectedGenre));
+    }
+
+    @Test
+    @DisplayName("Метод 'findAll()'. В БД есть жанр с ID '2'")
+    void inAllGenresHasGenre() {
+        // Arrange
+        var expectedGenre = new Genre(2, "Genre_2");
+        // Act
+        var genresList = genreRepository.findAll();
+        // Assert
+        Assertions.assertTrue(genresList.contains(expectedGenre));
     }
 
 }

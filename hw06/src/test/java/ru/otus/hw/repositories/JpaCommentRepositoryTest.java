@@ -17,14 +17,14 @@ public class JpaCommentRepositoryTest {
     private CommentRepository commentRepository;
 
     @Test
-    @DisplayName("В БД нет записей с номером '-777'")
-    void expectedEmptyWhenNotFound() {
+    @DisplayName("Метод 'findById()'. В БД нет комментария с ID '-777'")
+    void emptyWhenNotFoundCommentById() {
         Assertions.assertEquals(Optional.empty(), commentRepository.findById(-777));
     }
 
     @Test
-    @DisplayName("В БД есть запись с номером '1'")
-    void expectedNotEmpty() {
+    @DisplayName("Метод 'findById()'. В БД есть комментарий с ID '1'")
+    void hasCommentById() {
         Assertions.assertNotNull(commentRepository.findById(1));
     }
 

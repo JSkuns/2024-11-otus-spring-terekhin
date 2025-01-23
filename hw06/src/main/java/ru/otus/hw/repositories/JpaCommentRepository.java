@@ -5,7 +5,6 @@ import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceContext;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 import ru.otus.hw.exceptions.EntityNotFoundException;
 import ru.otus.hw.models.Comment;
 
@@ -20,7 +19,6 @@ public class JpaCommentRepository implements CommentRepository {
     private EntityManager entityManager;
 
     @Override
-    @Transactional(readOnly = true)
     public Optional<Comment> findById(long id) {
         try {
             return Optional.of(entityManager.find(Comment.class, id));
@@ -30,7 +28,6 @@ public class JpaCommentRepository implements CommentRepository {
     }
 
     @Override
-    @Transactional(readOnly = true)
     public List<Comment> findAllCommentsByBookId(long bookId) {
         return entityManager
                 .createQuery("SELECT c FROM Comment c WHERE c.book.id = :book_id", Comment.class)
@@ -39,7 +36,6 @@ public class JpaCommentRepository implements CommentRepository {
     }
 
     @Override
-    @Transactional
     public Comment save(Comment comment) {
         if (comment.getId() == 0) {
             return insert(comment);
@@ -48,7 +44,6 @@ public class JpaCommentRepository implements CommentRepository {
     }
 
     @Override
-    @Transactional
     public void deleteById(long id) {
         entityManager
                 .createQuery("DELETE FROM Comment c WHERE c.id = :id")

@@ -5,7 +5,6 @@ import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceContext;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 import ru.otus.hw.exceptions.EntityNotFoundException;
 import ru.otus.hw.models.Book;
 
@@ -23,7 +22,6 @@ public class JpaBookRepository implements BookRepository {
      * Найти книгу по ID
      */
     @Override
-    @Transactional(readOnly = true)
     public Optional<Book> findById(long id) {
         try {
             return Optional.of(entityManager.find(Book.class, id));
@@ -36,7 +34,6 @@ public class JpaBookRepository implements BookRepository {
      * Получить все книги из БД
      */
     @Override
-    @Transactional(readOnly = true)
     public List<Book> findAll() {
         return entityManager
                 .createQuery("SELECT b FROM Book b", Book.class)
@@ -47,7 +44,6 @@ public class JpaBookRepository implements BookRepository {
      * Сохраняем или изменяем книгу (В зависимости от ID объекта Book).
      */
     @Override
-    @Transactional
     public Book save(Book book) {
         if (book.getId() == 0) {
             return insert(book);
@@ -59,7 +55,6 @@ public class JpaBookRepository implements BookRepository {
      * Удалить какую-либо книгу по Id.
      */
     @Override
-    @Transactional
     public void deleteById(long id) {
         entityManager
                 .createQuery("DELETE FROM Book b WHERE b.id = :id")
