@@ -1,11 +1,10 @@
 package ru.otus.hw.repositories;
 
+import jakarta.persistence.EntityGraph;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceContext;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Repository;
-import ru.otus.hw.exceptions.EntityNotFoundException;
 import ru.otus.hw.models.Comment;
 
 import java.util.List;
@@ -13,25 +12,30 @@ import java.util.Optional;
 
 @Repository
 @AllArgsConstructor
-public class JpaCommentRepository implements CommentRepository {
+public class CommentJpaRepository implements CommentRepository {
 
     @PersistenceContext
     private EntityManager entityManager;
 
     @Override
     public Optional<Comment> findById(long id) {
-        try {
-            return Optional.of(entityManager.find(Comment.class, id));
-        } catch (NoResultException | NullPointerException ex) {
-            return Optional.empty();
-        }
+        EntityGraph<?> entityGraph = entityManager.getEntityGraph("comment-entity-graph");
+        return entityManager
+                .createQuery("SELECT c FROM Comment c WHERE c.id = :id", Comment.class)
+                .setParameter("id", id)
+                .setHint("javax.persistence.fetchgraph", entityGraph)
+                .getResultList()
+                .stream()
+                .findFirst();
     }
 
     @Override
     public List<Comment> findAllCommentsByBookId(long bookId) {
+        EntityGraph<?> entityGraph = entityManager.getEntityGraph("comment-entity-graph");
         return entityManager
                 .createQuery("SELECT c FROM Comment c WHERE c.book.id = :book_id", Comment.class)
                 .setParameter("book_id", bookId)
+                .setHint("javax.persistence.fetchgraph", entityGraph)
                 .getResultList();
     }
 
@@ -44,11 +48,8 @@ public class JpaCommentRepository implements CommentRepository {
     }
 
     @Override
-    public void deleteById(long id) {
-        entityManager
-                .createQuery("DELETE FROM Comment c WHERE c.id = :id")
-                .setParameter("id", id)
-                .executeUpdate();
+    public void delete(Comment comment) {
+        entityManager.remove(comment);
     }
 
     private Comment insert(Comment comment) {
@@ -58,11 +59,7 @@ public class JpaCommentRepository implements CommentRepository {
     }
 
     private Comment update(Comment comment) {
-        if (findById(comment.getId()).isPresent()) {
-            return entityManager.merge(comment);
-        } else {
-            throw new EntityNotFoundException("Comment with id %d not found".formatted(comment.getId()));
-        }
+        return entityManager.merge(comment);
     }
 
 }

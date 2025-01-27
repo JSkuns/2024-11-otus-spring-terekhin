@@ -11,8 +11,8 @@ import ru.otus.hw.models.Genre;
 import java.util.Optional;
 
 @DataJpaTest
-@Import(JpaGenreRepository.class)
-public class JpaGenreRepositoryTest {
+@Import(GenreJpaRepository.class)
+public class GenreJpaRepositoryTest {
 
     @Autowired
     private GenreRepository genreRepository;

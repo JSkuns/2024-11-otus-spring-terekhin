@@ -15,6 +15,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Service
 public class BookServiceImpl implements BookService {
+
     private final AuthorRepository authorRepository;
 
     private final GenreRepository genreRepository;
@@ -42,13 +43,18 @@ public class BookServiceImpl implements BookService {
     @Override
     @Transactional
     public Book update(long id, String title, long authorId, long genreId) {
+        bookRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Book with id %d not found".formatted(id)));
         return save(id, title, authorId, genreId);
     }
 
     @Override
     @Transactional
     public void deleteById(long id) {
-        bookRepository.deleteById(id);
+        var book = findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Book with id %d not found".formatted(id)));
+        bookRepository.delete(book);
+        System.out.printf("Book with id %d was deleted\n", id);
     }
 
     @Transactional
@@ -60,4 +66,5 @@ public class BookServiceImpl implements BookService {
         var book = new Book(id, title, author, genre);
         return bookRepository.save(book);
     }
+
 }

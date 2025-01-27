@@ -11,7 +11,7 @@ import java.util.Optional;
 
 @Repository
 @AllArgsConstructor
-public class JpaGenreRepository implements GenreRepository {
+public class GenreJpaRepository implements GenreRepository {
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -31,12 +31,7 @@ public class JpaGenreRepository implements GenreRepository {
      */
     @Override
     public Optional<Genre> findById(long id) {
-        return entityManager
-                .createQuery("SELECT g FROM Genre g WHERE g.id = :id", Genre.class)
-                .setParameter("id", id)
-                .getResultList()
-                .stream()
-                .findFirst();
+        return Optional.ofNullable(entityManager.find(Genre.class, id));
     }
 
 }

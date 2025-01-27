@@ -1,11 +1,10 @@
 package ru.otus.hw.repositories;
 
+import jakarta.persistence.EntityGraph;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceContext;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Repository;
-import ru.otus.hw.exceptions.EntityNotFoundException;
 import ru.otus.hw.models.Book;
 
 import java.util.List;
@@ -13,7 +12,7 @@ import java.util.Optional;
 
 @Repository
 @AllArgsConstructor
-public class JpaBookRepository implements BookRepository {
+public class BookJpaRepository implements BookRepository {
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -23,11 +22,14 @@ public class JpaBookRepository implements BookRepository {
      */
     @Override
     public Optional<Book> findById(long id) {
-        try {
-            return Optional.of(entityManager.find(Book.class, id));
-        } catch (NoResultException | NullPointerException ex) {
-            return Optional.empty();
-        }
+        EntityGraph<?> entityGraph = entityManager.getEntityGraph("book-entity-graph");
+        return entityManager
+                .createQuery("SELECT b FROM Book b WHERE b.id = :id", Book.class)
+                .setParameter("id", id)
+                .setHint("javax.persistence.fetchgraph", entityGraph)
+                .getResultList()
+                .stream()
+                .findFirst();
     }
 
     /**
@@ -35,8 +37,10 @@ public class JpaBookRepository implements BookRepository {
      */
     @Override
     public List<Book> findAll() {
+        EntityGraph<?> entityGraph = entityManager.getEntityGraph("book-entity-graph");
         return entityManager
                 .createQuery("SELECT b FROM Book b", Book.class)
+                .setHint("javax.persistence.fetchgraph", entityGraph)
                 .getResultList();
     }
 
@@ -55,11 +59,8 @@ public class JpaBookRepository implements BookRepository {
      * Удалить какую-либо книгу по Id.
      */
     @Override
-    public void deleteById(long id) {
-        entityManager
-                .createQuery("DELETE FROM Book b WHERE b.id = :id")
-                .setParameter("id", id)
-                .executeUpdate();
+    public void delete(Book book) {
+        entityManager.remove(book);
     }
 
     /**
@@ -75,11 +76,7 @@ public class JpaBookRepository implements BookRepository {
      * Меняем запись, или вставляем новую
      */
     private Book update(Book book) {
-        if (findById(book.getId()).isPresent()) {
-            return entityManager.merge(book);
-        } else {
-            throw new EntityNotFoundException("Book with id %d not found".formatted(book.getId()));
-        }
+        return entityManager.merge(book);
     }
 
 }

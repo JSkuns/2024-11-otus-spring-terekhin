@@ -11,7 +11,7 @@ import java.util.Optional;
 
 @Repository
 @AllArgsConstructor
-public class JpaAuthorRepository implements AuthorRepository {
+public class AuthorJpaRepository implements AuthorRepository {
 
     @PersistenceContext
     private EntityManager entityManager;

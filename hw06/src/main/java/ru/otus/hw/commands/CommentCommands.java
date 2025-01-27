@@ -8,6 +8,7 @@ import ru.otus.hw.services.CommentService;
 
 import java.util.stream.Collectors;
 
+@SuppressWarnings({"SpellCheckingInspection", "unused"})
 @RequiredArgsConstructor
 @ShellComponent
 public class CommentCommands {
@@ -17,8 +18,8 @@ public class CommentCommands {
     private final CommentConverter commentConverter;
 
     // (C)omment by (B)ook (ID) // Example: cbid 2
-    @ShellMethod(value = "Find comment by book id", key = "cbid")
-    public String findCommentByBookId(long bookId) {
+    @ShellMethod(value = "Find comments by book id", key = "cbid")
+    public String findAllCommentsByBookId(long bookId) {
         return commentService
                 .findAllCommentsByBookId(bookId)
                 .stream()
@@ -31,9 +32,8 @@ public class CommentCommands {
     public String findCommentById(long id) {
         return commentService
                 .findById(id)
-                .stream()
                 .map(commentConverter::commentToString)
-                .collect(Collectors.joining("," + System.lineSeparator()));
+                .orElse("Comment with id %d not found".formatted(id));
     }
 
     // (C)omment (DEL)ete // Example: cdel 4
@@ -50,9 +50,9 @@ public class CommentCommands {
     }
 
     // (C)omment (UPD)ate // Example: cupd 2 2 qqq
-    @ShellMethod(value = "Update book", key = "cupd")
-    public String updateBook(long id, long bookId, String text) {
-        var savedComment = commentService.update(id, bookId, text);
+    @ShellMethod(value = "Update comment", key = "cupd")
+    public String updateComment(long id, String text) {
+        var savedComment = commentService.update(id, text);
         return commentConverter.commentToString(savedComment);
     }
 

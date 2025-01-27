@@ -11,8 +11,8 @@ import ru.otus.hw.models.Author;
 import java.util.Optional;
 
 @DataJpaTest
-@Import(JpaAuthorRepository.class)
-public class JpaAuthorRepositoryTest {
+@Import(AuthorJpaRepository.class)
+public class AuthorJpaRepositoryTest {
 
     @Autowired
     private AuthorRepository authorRepository;
