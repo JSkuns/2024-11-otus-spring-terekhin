@@ -19,8 +19,6 @@ public class GenreServiceImplTest {
     @Test
     @DisplayName("Метод findAll(). В БД нет жанра с ID '-321'")
     void inAllGenresHasNotGenreTest() {
-        // Arrange
-        var expectedGenre = new Genre(-321, null);
         // Act
         var genresList = genreService.findAll();
         // Assert
@@ -28,15 +26,13 @@ public class GenreServiceImplTest {
                 genresList
                         .stream()
                         .map(Genre::getId)
-                        .anyMatch(elt -> elt == expectedGenre.getId())
+                        .anyMatch(elt -> elt == -321)
         );
     }
 
     @Test
     @DisplayName("Метод 'findAll()'. В БД есть жанр с ID '3'")
     void inAllGenresHasGenreTest() {
-        // Arrange
-        var expectedGenre = new Genre(3, null);
         // Act
         var genresList = genreService.findAll();
         // Assert
@@ -44,7 +40,7 @@ public class GenreServiceImplTest {
                 genresList
                         .stream()
                         .map(Genre::getId)
-                        .anyMatch(elt -> elt == expectedGenre.getId())
+                        .anyMatch(elt -> elt == 3)
         );
     }
 

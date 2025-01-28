@@ -1,4 +1,4 @@
-package ru.otus.hw.repositories;
+package ru.otus.hw.services;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -7,42 +7,39 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 import ru.otus.hw.models.Book;
+import ru.otus.hw.repositories.AuthorJpaRepository;
+import ru.otus.hw.repositories.BookJpaRepository;
+import ru.otus.hw.repositories.GenreJpaRepository;
 
 import java.util.Objects;
 import java.util.Optional;
 
 @DataJpaTest
-@Import({BookJpaRepository.class, GenreJpaRepository.class, AuthorJpaRepository.class})
-public class BookJpaRepositoryTest {
+@Import({BookServiceImpl.class, BookJpaRepository.class, AuthorJpaRepository.class, GenreJpaRepository.class})
+public class BookServiceImplTest {
 
     @Autowired
-    private BookRepository bookRepository;
-
-    @Autowired
-    private GenreRepository genreRepository;
-
-    @Autowired
-    private AuthorRepository authorRepository;
+    private BookService bookService;
 
     @Test
     @DisplayName("Метод 'findById()'. В БД нет книги с ID '-777'")
     void emptyWhenNotFoundBookByIdTest() {
         // Assert
-        Assertions.assertEquals(Optional.empty(), bookRepository.findById(-777));
+        Assertions.assertEquals(Optional.empty(), bookService.findById(-777));
     }
 
     @Test
     @DisplayName("Метод 'findById()'. В БД есть книга с ID '1'")
     void hasBookByIdTest() {
         // Assert
-        Assertions.assertNotNull(bookRepository.findById(1));
+        Assertions.assertNotNull(bookService.findById(1));
     }
 
     @Test
     @DisplayName("Метод 'findAll()'. В БД нет книги с ID '-888'")
     void inAllBooksHasNotAuthorTest() {
         // Act
-        var booksList = bookRepository.findAll();
+        var booksList = bookService.findAll();
         // Assert
         Assertions.assertFalse(
                 booksList
@@ -56,7 +53,7 @@ public class BookJpaRepositoryTest {
     @DisplayName("Метод 'findAll()'. В БД есть книга с ID '2'")
     void inAllBooksHasBookTest() {
         // Act
-        var booksList = bookRepository.findAll();
+        var booksList = bookService.findAll();
         // Assert
         Assertions.assertTrue(
                 booksList
@@ -67,22 +64,18 @@ public class BookJpaRepositoryTest {
     }
 
     @Test
-    @DisplayName("Метод 'save()'. Должна добавиться новая книга в БД")
+    @DisplayName("Метод 'insert()'. Должна добавиться новая книга в БД")
     void insertNewBookTest() {
         // Arrange
         var testTitleOfBook = "Peter Pan";
-        var genre = genreRepository.findById(2).orElse(null);
-        var author = authorRepository.findById(3).orElse(null);
-        var book = new Book(0, testTitleOfBook, author, genre);
-        var initCountBooks = bookRepository.findAll().size();
+        var initCountBooks = bookService.findAll().size();
         // Act
-        bookRepository.save(book);
-        var booksList = bookRepository.findAll();
-        var countOfBooksAfterSave = booksList.size();
+        bookService.insert(testTitleOfBook, 2, 3);
+        var resultBooksList = bookService.findAll();
         // Assert
-        Assertions.assertTrue(initCountBooks < countOfBooksAfterSave);
+        Assertions.assertTrue(initCountBooks < resultBooksList.size());
         Assertions.assertTrue(
-                booksList
+                resultBooksList
                         .stream()
                         .map(Book::getTitle)
                         .anyMatch(elt -> Objects.equals(elt, testTitleOfBook))
@@ -90,32 +83,31 @@ public class BookJpaRepositoryTest {
     }
 
     @Test
-    @DisplayName("Метод 'save()'. Должны измениться данные о книге")
+    @DisplayName("Метод 'update()'. Должны измениться данные о книге")
     void updateExistedBookTest() {
         // Arrange
         var testTitleOfBook = "Wuthering Heights";
-        var existedBook = bookRepository.findById(3).orElse(new Book());
-        var initTitleOfBook = existedBook.getTitle();
+        var testIdOfBook = 2;
+        var initTitleOfBook = bookService.findById(testIdOfBook).orElse(new Book()).getTitle();
         // Act
-        existedBook.setTitle(testTitleOfBook);
-        bookRepository.save(existedBook);
-        var resultBook = bookRepository.findById(existedBook.getId()).orElse(new Book());
+        bookService.update(testIdOfBook, testTitleOfBook, 1, 3);
+        var resultBook = bookService.findById(testIdOfBook).orElse(new Book());
         // Assert
         Assertions.assertNotEquals(initTitleOfBook, resultBook.getTitle());
         Assertions.assertEquals(testTitleOfBook, resultBook.getTitle());
     }
 
     @Test
-    @DisplayName("Метод 'delete()'. Должна удалиться книга из БД")
+    @DisplayName("Метод 'deleteById()'. Должна удалиться книга из БД")
     void deleteBookTest() {
         // Arrange
-        var booksList = bookRepository.findAll();
+        var booksList = bookService.findAll();
         var initCountBooks = booksList.size();
-        var firstBook = booksList.stream().findFirst().orElse(new Book());
+        var firstBookFromDb = booksList.stream().findFirst().orElse(new Book());
         // Act
-        bookRepository.delete(firstBook);
+        bookService.deleteById(firstBookFromDb.getId());
         // Assert
-        Assertions.assertNotEquals(initCountBooks, bookRepository.findAll().size());
+        Assertions.assertNotEquals(initCountBooks, bookService.findAll().size());
     }
 
 }

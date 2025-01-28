@@ -19,8 +19,6 @@ public class AuthorServiceImplTest {
     @Test
     @DisplayName("Метод findAll(). В БД нет автора с ID '-123'")
     void inAllAuthorsHasNotAuthorTest() {
-        // Arrange
-        var expectedAuthor = new Author(-123, null);
         // Act
         var authorsList = authorService.findAll();
         // Assert
@@ -28,15 +26,13 @@ public class AuthorServiceImplTest {
                 authorsList
                         .stream()
                         .map(Author::getId)
-                        .anyMatch(elt -> elt == expectedAuthor.getId())
+                        .anyMatch(elt -> elt == -123)
         );
     }
 
     @Test
     @DisplayName("Метод 'findAll()'. В БД есть автор с ID '2'")
     void inAllAuthorsHasAuthorTest() {
-        // Arrange
-        var expectedAuthor = new Author(2, null);
         // Act
         var authorsList = authorService.findAll();
         // Assert
@@ -44,7 +40,7 @@ public class AuthorServiceImplTest {
                 authorsList
                         .stream()
                         .map(Author::getId)
-                        .anyMatch(elt -> elt == expectedAuthor.getId())
+                        .anyMatch(elt -> elt == 2)
         );
     }
 

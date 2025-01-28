@@ -1,4 +1,4 @@
-package ru.otus.hw.repositories;
+package ru.otus.hw.services;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -6,41 +6,39 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
-import ru.otus.hw.models.Book;
 import ru.otus.hw.models.Comment;
+import ru.otus.hw.repositories.BookJpaRepository;
+import ru.otus.hw.repositories.CommentJpaRepository;
 
 import java.util.Objects;
 import java.util.Optional;
 
 @DataJpaTest
-@Import({CommentJpaRepository.class, BookJpaRepository.class})
-public class CommentJpaRepositoryTest {
+@Import({CommentServiceImpl.class, CommentJpaRepository.class, BookJpaRepository.class})
+public class CommentServiceImplTest {
 
     @Autowired
-    private CommentRepository commentRepository;
-
-    @Autowired
-    private BookRepository bookRepository;
+    private CommentService commentService;
 
     @Test
     @DisplayName("Метод 'findById()'. В БД нет комментария с ID '-777'")
     void emptyWhenNotFoundCommentByIdTest() {
         // Assert
-        Assertions.assertEquals(Optional.empty(), commentRepository.findById(-777));
+        Assertions.assertEquals(Optional.empty(), commentService.findById(-777));
     }
 
     @Test
     @DisplayName("Метод 'findById()'. В БД есть комментарий с ID '1'")
     void hasCommentByIdTest() {
         // Assert
-        Assertions.assertNotNull(commentRepository.findById(1));
+        Assertions.assertNotNull(commentService.findById(1));
     }
 
     @Test
     @DisplayName("Метод 'findAllCommentsByBookId()'. Комментария с ID '-999' нет у книги с ID '1'")
     void bookHasNotCommentTest() {
         // Act
-        var commentsList = commentRepository.findAllCommentsByBookId(1);
+        var commentsList = commentService.findAllCommentsByBookId(1);
         // Assert
         Assertions.assertFalse(
                 commentsList
@@ -54,7 +52,7 @@ public class CommentJpaRepositoryTest {
     @DisplayName("Метод 'findAllCommentsByBookId()'. Комментарий с ID '2' есть у книги c ID '2'")
     void bookHasCommentTest() {
         // Act
-        var commentsList = commentRepository.findAllCommentsByBookId(2);
+        var commentsList = commentService.findAllCommentsByBookId(2);
         // Assert
         Assertions.assertTrue(
                 commentsList
@@ -70,17 +68,14 @@ public class CommentJpaRepositoryTest {
         // Arrange
         var testBookId = 1;
         var testCommentText = "Test_1234567890";
-        var book = bookRepository.findById(testBookId).orElse(new Book());
-        var comment = new Comment(0, testCommentText, book);
-        var initCountOfCommentsByBook = commentRepository.findAllCommentsByBookId(testBookId).size();
+        var initCountOfCommentsByBook = commentService.findAllCommentsByBookId(testBookId).size();
         // Act
-        commentRepository.save(comment);
-        var commentsList = commentRepository.findAllCommentsByBookId(testBookId);
-        var countOfCommentsAfterSave = commentsList.size();
+        commentService.insert(testBookId, testCommentText);
+        var resultCommentsList = commentService.findAllCommentsByBookId(testBookId);
         // Assert
-        Assertions.assertTrue(initCountOfCommentsByBook < countOfCommentsAfterSave);
+        Assertions.assertTrue(initCountOfCommentsByBook < resultCommentsList.size());
         Assertions.assertTrue(
-                commentsList
+                resultCommentsList
                         .stream()
                         .map(Comment::getText)
                         .anyMatch(elt -> Objects.equals(elt, testCommentText))
@@ -92,29 +87,29 @@ public class CommentJpaRepositoryTest {
     void updateExistedCommentTest() {
         // Arrange
         var testCommentText = "Test_qqq_www_eee_rrr_ttt_yyy";
-        var existedComment = commentRepository.findById(2).orElse(new Comment());
+        var testIdOfComment = 2;
+        var existedComment = commentService.findById(testIdOfComment).orElse(new Comment());
         var initTextOfComment = existedComment.getText();
         // Act
-        existedComment.setText(testCommentText);
-        commentRepository.save(existedComment);
-        var resultComment = commentRepository.findById(existedComment.getId()).orElse(new Comment());
+        commentService.update(testIdOfComment, testCommentText);
+        var resultComment = commentService.findById(testIdOfComment).orElse(new Comment());
         // Assert
         Assertions.assertNotEquals(initTextOfComment, resultComment.getText());
         Assertions.assertEquals(testCommentText, resultComment.getText());
     }
 
     @Test
-    @DisplayName("Метод 'delete()'. Должен удалиться комментарий из БД")
+    @DisplayName("Метод 'deleteById()'. Должен удалиться комментарий из БД")
     void deleteBookTest() {
         // Arrange
         var testBookId = 3;
-        var commentsList = commentRepository.findAllCommentsByBookId(testBookId);
+        var commentsList = commentService.findAllCommentsByBookId(testBookId);
         var initCountComments = commentsList.size();
         var firstComment = commentsList.stream().findFirst().orElse(new Comment());
         // Act
-        commentRepository.delete(firstComment);
+        commentService.deleteById(firstComment.getId());
         // Assert
-        Assertions.assertNotEquals(initCountComments, commentRepository.findAllCommentsByBookId(testBookId).size());
+        Assertions.assertNotEquals(initCountComments, commentService.findAllCommentsByBookId(testBookId).size());
     }
 
 }
