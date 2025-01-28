@@ -1,0 +1,51 @@
+package ru.otus.hw.services;
+
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.context.annotation.Import;
+import ru.otus.hw.models.Genre;
+import ru.otus.hw.repositories.GenreJpaRepository;
+
+@DataJpaTest
+@Import({GenreServiceImpl.class, GenreJpaRepository.class})
+public class GenreServiceImplTest {
+
+    @Autowired
+    private GenreService genreService;
+
+    @Test
+    @DisplayName("Метод findAll(). В БД нет жанра с ID '-321'")
+    void inAllGenresHasNotGenreTest() {
+        // Arrange
+        var expectedGenre = new Genre(-321, null);
+        // Act
+        var genresList = genreService.findAll();
+        // Assert
+        Assertions.assertFalse(
+                genresList
+                        .stream()
+                        .map(Genre::getId)
+                        .anyMatch(elt -> elt == expectedGenre.getId())
+        );
+    }
+
+    @Test
+    @DisplayName("Метод 'findAll()'. В БД есть жанр с ID '3'")
+    void inAllGenresHasGenreTest() {
+        // Arrange
+        var expectedGenre = new Genre(3, null);
+        // Act
+        var genresList = genreService.findAll();
+        // Assert
+        Assertions.assertTrue(
+                genresList
+                        .stream()
+                        .map(Genre::getId)
+                        .anyMatch(elt -> elt == expectedGenre.getId())
+        );
+    }
+
+}
