@@ -55,7 +55,8 @@ public class CommentCommands {
 
     /**
      * (C)omment (INS)ert
-     * Example: cins 2 www
+     * Example 1: cins 2 www
+     * Example 2: cins 2 "www trtrrtrtr"
      */
     @ShellMethod(value = "Insert comment", key = "cins")
     public String insertComment(long bookId, String text) {

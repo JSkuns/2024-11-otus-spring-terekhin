@@ -50,6 +50,5 @@ public class BookCommands {
     @ShellMethod(value = "Delete book by id", key = "bdel")
     public void deleteBook(long id) {
         bookService.deleteById(id);
-        System.out.printf("Book with id %d was deleted\n", id);
     }
 }

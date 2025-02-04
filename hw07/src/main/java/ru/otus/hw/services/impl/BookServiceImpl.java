@@ -1,6 +1,7 @@
-package ru.otus.hw.services;
+package ru.otus.hw.services.impl;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.otus.hw.exceptions.EntityNotFoundException;
@@ -8,12 +9,14 @@ import ru.otus.hw.models.Book;
 import ru.otus.hw.repositories.AuthorRepository;
 import ru.otus.hw.repositories.BookRepository;
 import ru.otus.hw.repositories.GenreRepository;
+import ru.otus.hw.services.BookService;
 
 import java.util.List;
 import java.util.Optional;
 
-@RequiredArgsConstructor
+@Slf4j
 @Service
+@RequiredArgsConstructor
 public class BookServiceImpl implements BookService {
 
     private final AuthorRepository authorRepository;
@@ -43,30 +46,38 @@ public class BookServiceImpl implements BookService {
     @Override
     @Transactional
     public Book update(long id, String title, long authorId, long genreId) {
-        validateBookExists(id);
+        bookRepository.findById(id)
+                .orElseThrow(() -> {
+                    var errMsg = "Book with id %d not found".formatted(id);
+                    log.error(errMsg);
+                    return new EntityNotFoundException(errMsg);
+                });
         return save(id, title, authorId, genreId);
     }
 
     @Override
     @Transactional
     public void deleteById(long id) {
-        validateBookExists(id);
         bookRepository.deleteById(id);
+        log.info("Book with id %d was deleted".formatted(id));
     }
 
     @Transactional
     private Book save(long id, String title, long authorId, long genreId) {
         var author = authorRepository.findById(authorId)
-                .orElseThrow(() -> new EntityNotFoundException("Author with id %d not found".formatted(authorId)));
+                .orElseThrow(() -> {
+                    var errMsg = "Author with id %d not found".formatted(authorId);
+                    log.error(errMsg);
+                    return new EntityNotFoundException(errMsg);
+                });
         var genre = genreRepository.findById(genreId)
-                .orElseThrow(() -> new EntityNotFoundException("Genre with id %d not found".formatted(genreId)));
+                .orElseThrow(() -> {
+                    var errMsg = "Genre with id %d not found".formatted(genreId);
+                    log.error(errMsg);
+                    return new EntityNotFoundException(errMsg);
+                });
         var book = new Book(id, title, author, genre);
         return bookRepository.save(book);
-    }
-
-    private void validateBookExists(long id) {
-        bookRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Book with id %d not found".formatted(id)));
     }
 
 }
