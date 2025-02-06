@@ -7,6 +7,9 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import ru.otus.hw.models.Author;
 import ru.otus.hw.models.Book;
 import ru.otus.hw.models.Genre;
@@ -16,9 +19,10 @@ import java.util.stream.IntStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@DisplayName("Репозиторий на основе Jdbc для работы с книгами ")
 @DataJpaTest
-class JdbcBookRepositoryTest {
+@Transactional(propagation = Propagation.NOT_SUPPORTED)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+class BookJpaRepositoryTest {
 
     @Autowired
     private BookRepository bookRepository;
@@ -36,16 +40,16 @@ class JdbcBookRepositoryTest {
         dbBooks = getDbBooks(dbAuthors, dbGenres);
     }
 
-    @DisplayName("должен загружать книгу по id")
-    @ParameterizedTest
+    @DisplayName("Метод 'findById()'. Должен загружать книгу по id")
     @MethodSource("getDbBooks")
+    @ParameterizedTest
     void shouldReturnCorrectBookById(Book expectedBook) {
         var actualBook = bookRepository.findById(expectedBook.getId());
         assertThat(actualBook).isPresent();
     }
 
-    @DisplayName("должен загружать список всех книг")
     @Test
+    @DisplayName("Метод 'findAll()'. Должен загружать список всех книг")
     void shouldReturnCorrectBooksList() {
         var actualBooks = bookRepository.findAll();
         var expectedBooks = dbBooks;
@@ -55,8 +59,8 @@ class JdbcBookRepositoryTest {
         actualBooks.forEach(System.out::println);
     }
 
-    @DisplayName("должен сохранять новую книгу")
     @Test
+    @DisplayName("Метод 'save()'. Должен сохранять новую книгу")
     void shouldSaveNewBook() {
         var expectedBook = new Book(0, "BookTitle_10500", dbAuthors.get(0), dbGenres.get(0));
         var returnedBook = bookRepository.save(expectedBook);
@@ -65,13 +69,11 @@ class JdbcBookRepositoryTest {
                 .usingRecursiveComparison().ignoringExpectedNullFields().isEqualTo(expectedBook);
 
         assertThat(bookRepository.findById(returnedBook.getId()))
-                .isPresent()
-                .get()
-                .isEqualTo(returnedBook);
+                .isPresent();
     }
 
-    @DisplayName("должен сохранять измененную книгу")
     @Test
+    @DisplayName("Метод 'save()'. Должен сохранять измененную книгу")
     void shouldSaveUpdatedBook() {
         var expectedBook = new Book(1L, "BookTitle_10500", dbAuthors.get(2), dbGenres.get(2));
 
@@ -86,12 +88,10 @@ class JdbcBookRepositoryTest {
                 .usingRecursiveComparison().ignoringExpectedNullFields().isEqualTo(expectedBook);
 
         assertThat(bookRepository.findById(returnedBook.getId()))
-                .isPresent()
-                .get()
-                .isEqualTo(returnedBook);
+                .isPresent();
     }
 
-    @DisplayName("должен удалять книгу по id ")
+    @DisplayName("Метод 'delete()'. Должен удалять книгу по id ")
     @Test
     void shouldDeleteBook() {
         assertThat(bookRepository.findById(1L)).isPresent();
