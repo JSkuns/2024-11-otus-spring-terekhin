@@ -22,10 +22,10 @@ public class Book {
 
     private String title;
 
-    @DBRef
+    @DBRef(lazy = true)
     private Author author;
 
-    @DBRef
+    @DBRef(lazy = true)
     private Genre genre;
 
 }

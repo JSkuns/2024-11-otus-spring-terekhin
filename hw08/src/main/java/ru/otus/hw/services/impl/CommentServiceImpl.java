@@ -3,7 +3,6 @@ package ru.otus.hw.services.impl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import ru.otus.hw.exceptions.EntityNotFoundException;
 import ru.otus.hw.models.Comment;
 import ru.otus.hw.repositories.BookRepository;
@@ -23,19 +22,16 @@ public class CommentServiceImpl implements CommentService {
     private final BookRepository bookRepository;
 
     @Override
-    @Transactional(readOnly = true)
     public List<Comment> findAllCommentsByBookId(String id) {
         return commentRepository.findByBookId(id);
     }
 
     @Override
-    @Transactional(readOnly = true)
     public Optional<Comment> findById(String id) {
         return commentRepository.findById(id);
     }
 
     @Override
-    @Transactional
     public Comment insert(String bookId, String text) {
         var book = bookRepository.findById(bookId)
                 .orElseThrow(() -> {
@@ -47,7 +43,6 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    @Transactional
     public Comment update(String id, String text) {
         var comment = findById(id)
                 .orElseThrow(() -> {
@@ -62,7 +57,6 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    @Transactional
     public void deleteById(String id) {
         commentRepository.deleteById(id);
         log.info("Comment with id %s was deleted".formatted(id));

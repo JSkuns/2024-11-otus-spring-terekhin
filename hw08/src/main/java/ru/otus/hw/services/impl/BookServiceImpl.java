@@ -3,11 +3,11 @@ package ru.otus.hw.services.impl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import ru.otus.hw.exceptions.EntityNotFoundException;
 import ru.otus.hw.models.Book;
 import ru.otus.hw.repositories.AuthorRepository;
 import ru.otus.hw.repositories.BookRepository;
+import ru.otus.hw.repositories.CommentRepository;
 import ru.otus.hw.repositories.GenreRepository;
 import ru.otus.hw.services.BookService;
 
@@ -25,26 +25,24 @@ public class BookServiceImpl implements BookService {
 
     private final BookRepository bookRepository;
 
+    private final CommentRepository commentRepository;
+
     @Override
-    @Transactional(readOnly = true)
     public Optional<Book> findById(String id) {
         return bookRepository.findById(id);
     }
 
     @Override
-    @Transactional(readOnly = true)
     public List<Book> findAll() {
         return bookRepository.findAll();
     }
 
     @Override
-    @Transactional
     public Book insert(String title, String authorId, String genreId) {
         return save(null, title, authorId, genreId);
     }
 
     @Override
-    @Transactional
     public Book update(String id, String title, String authorId, String genreId) {
         bookRepository.findById(id)
                 .orElseThrow(() -> {
@@ -56,13 +54,20 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    @Transactional
     public void deleteById(String id) {
+        deleteAllCommentsToTheBook(id);
         bookRepository.deleteById(id);
         log.info("Book with id %s was deleted".formatted(id));
     }
 
-    @Transactional
+    /**
+     * Удалим все комментарии, которые относятся к книге
+     */
+    private void deleteAllCommentsToTheBook(String id) {
+        commentRepository.deleteByBookId(id);
+        log.info("Comments on the book with id %s have been deleted".formatted(id));
+    }
+
     private Book save(String id, String title, String authorId, String genreId) {
         var author = authorRepository.findById(authorId)
                 .orElseThrow(() -> {
