@@ -1,0 +1,6 @@
+CREATE TABLE IF NOT EXISTS authors
+(
+    id BIGINT PRIMARY KEY,
+--     id BIGSERIAL PRIMARY KEY,
+    fullName VARCHAR(255)
+);
