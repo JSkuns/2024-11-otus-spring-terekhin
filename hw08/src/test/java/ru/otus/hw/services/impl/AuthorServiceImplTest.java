@@ -14,7 +14,7 @@ import ru.otus.hw.services.AuthorService;
 
 @DataMongoTest
 @Import(AuthorServiceImpl.class)
-@Transactional(propagation = Propagation.NOT_SUPPORTED)
+@Transactional(propagation = Propagation.NEVER)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class AuthorServiceImplTest {
 
@@ -31,7 +31,7 @@ public class AuthorServiceImplTest {
                 authorsList
                         .stream()
                         .map(Author::getId)
-                        .anyMatch(elt -> elt == "-123")
+                        .anyMatch(elt -> elt.equals("-123"))
         );
     }
 

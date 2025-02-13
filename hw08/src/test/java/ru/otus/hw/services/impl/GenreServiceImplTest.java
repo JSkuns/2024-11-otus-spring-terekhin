@@ -14,7 +14,7 @@ import ru.otus.hw.services.GenreService;
 
 @DataMongoTest
 @Import(GenreServiceImpl.class)
-@Transactional(propagation = Propagation.NOT_SUPPORTED)
+@Transactional(propagation = Propagation.NEVER)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class GenreServiceImplTest {
 

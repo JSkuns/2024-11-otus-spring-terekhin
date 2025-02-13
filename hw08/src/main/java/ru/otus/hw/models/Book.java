@@ -6,7 +6,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.Builder;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Getter
@@ -22,10 +21,8 @@ public class Book {
 
     private String title;
 
-    @DBRef(lazy = true)
     private Author author;
 
-    @DBRef(lazy = true)
     private Genre genre;
 
 }
