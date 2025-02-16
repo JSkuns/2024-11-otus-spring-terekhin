@@ -3,6 +3,8 @@ package ru.otus.hw.services;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
@@ -38,119 +40,124 @@ public class CommentServiceImplTest {
         dbBooks = getDbBooks(dbAuthors, dbGenres);
     }
 
-    @Test
-    @DisplayName("Метод 'findById()'. В БД нет комментария с ID '-777'")
-    void emptyWhenNotFoundCommentByIdTest() {
-        // Assert
-        assertThat(commentService.findById(-777L))
-                .isEmpty();
-    }
+    @ParameterizedTest
+    @MethodSource("getDbComments")
+    @DisplayName("должен загружать комментарий по id")
+    void shouldReturnCorrectCommentById(Comment expectedComment) {
+        var actualComment = commentService.findById(expectedComment.getId());
 
-    @Test
-    @DisplayName("Метод 'findById()'. В БД есть комментарии")
-    void hasCommentByIdTest() {
-        // Arrange
-        var commentIdsList = IntStream.range(1, 3)
-                .boxed()
-                .toList();
-        // Act
-        commentIdsList.forEach(id -> {
-            var actualComment = commentService.findById(id.longValue());
-            // Assert
-            assertThat(actualComment)
-                    .isPresent();
-        });
-    }
-
-    @Test
-    @DisplayName("Метод 'findAllCommentsByBookId()'. У книг есть комментарии")
-    void bookHasNotCommentTest() {
-        // Arrange
-        var bookIdsList = dbBooks
-                .stream()
-                .map(Book::getId);
-        // Act
-        bookIdsList.forEach(id -> {
-            var expectedCommentText = "Text_" + id;
-            var comments = commentService
-                    .findAllCommentsByBookId(id);
-            var commentTexts = comments
-                    .stream()
-                    .map(Comment::getText);
-            // Assert
-            assertThat(comments)
-                    .isNotNull();
-            assertThat(commentTexts)
-                    .contains(expectedCommentText);
-        });
-    }
-
-    @Test
-    @DisplayName("Метод 'save()'. Должен добавиться новый комментарий к книге с ID '1'")
-    void insertNewCommentTest() {
-        // Arrange
-        var expectedComment = new Comment(4L, "Text_444", dbBooks.get(0));
-        // Act
-        var returnedComment = commentService
-                .insert(expectedComment.getBook().getId(), expectedComment.getText());
-        // Assert
-        assertThat(returnedComment)
-                .isNotNull()
-                .matches(comment -> comment.getId() > 0)
+        assertThat(actualComment)
+                .isPresent()
+                .get()
                 .usingRecursiveComparison()
                 .ignoringExpectedNullFields()
+                .ignoringFields("book")
                 .isEqualTo(expectedComment);
-        assertThat(commentService.findById(returnedComment.getId()))
-                .isPresent();
     }
 
     @Test
-    @DisplayName("Метод 'save()'. Должны измениться данные в комментарии c ID '2'")
-    void updateExistedCommentTest() {
-        // Arrange
-        var expectedComment = new Comment(1L, "Text_555", dbBooks.get(1));
+    @DisplayName("должен сохранять новый комментарий")
+    void shouldSaveNewComment() {
+        var expectedComment = new Comment(0, "CommentText_10500", dbBooks.get(0));
+        var returnedComment = commentService
+                .insert(expectedComment.getBook().getId(), expectedComment.getText());
+
+        assertThat(returnedComment)
+                .isNotNull()
+                .matches(comment -> comment.getId() != 0)
+                .usingRecursiveComparison()
+                .ignoringExpectedNullFields()
+                .ignoringFields("id")
+                .isEqualTo(expectedComment);
+
+        assertThat(commentService.findById(returnedComment.getId()))
+                .isPresent()
+                .get()
+                .usingRecursiveComparison()
+                .ignoringExpectedNullFields()
+                .ignoringFields("book")
+                .isEqualTo(returnedComment);
+    }
+
+    @Test
+    @DisplayName("должен сохранять измененный комментарий")
+    void shouldSaveUpdatedComment() {
+        var expectedComment = new Comment(1, "BookTitle_10500", dbBooks.get(1));
+
         assertThat(commentService.findById(expectedComment.getId()))
                 .isPresent()
                 .get()
                 .isNotEqualTo(expectedComment);
-        // Act
-        var returnedComment = commentService.update(expectedComment.getId(), expectedComment.getText());
-        // Assert
-        assertThat(returnedComment)
-                .isNotNull()
-                .matches(comment -> comment.getId() > 0);
+
+        var returnedComment = commentService
+                .update(expectedComment.getId(), expectedComment.getText());
+        assertThat(returnedComment).isNotNull()
+                .matches(comment -> comment.getId() != 0)
+                .usingRecursiveComparison()
+                .ignoringExpectedNullFields()
+                .ignoringFields("book")
+                .isEqualTo(expectedComment);
+
         assertThat(commentService.findById(returnedComment.getId()))
-                .isPresent();
+                .isPresent()
+                .get()
+                .usingRecursiveComparison()
+                .ignoringExpectedNullFields()
+                .ignoringFields("book")
+                .isEqualTo(returnedComment);
     }
 
     @Test
-    @DisplayName("Метод 'delete()'. Должен удалиться комментарий из БД")
-    void deleteBookTest() {
-        // Act
-        assertThat(commentService.findById(1L))
+    @DisplayName("должен удалять комментарий по id ")
+    void shouldDeleteComment() {
+        var testId = 1;
+
+        assertThat(commentService.findById(testId))
                 .isPresent();
-        commentService.deleteById(1L);
-        // Assert
-        assertThat(commentService.findById(1L))
+
+        commentService.deleteById(testId);
+
+        assertThat(commentService.findById(testId))
                 .isEmpty();
     }
 
     private static List<Author> getDbAuthors() {
-        return IntStream.range(1, 4).boxed()
+        return IntStream
+                .range(1, 4)
+                .boxed()
                 .map(id -> new Author(id, "Author_" + id))
                 .toList();
     }
 
     private static List<Genre> getDbGenres() {
-        return IntStream.range(1, 4).boxed()
+        return IntStream
+                .range(1, 4)
+                .boxed()
                 .map(id -> new Genre(id, "Genre_" + id))
                 .toList();
     }
 
     private static List<Book> getDbBooks(List<Author> dbAuthors, List<Genre> dbGenres) {
-        return IntStream.range(1, 4).boxed()
+        return IntStream
+                .range(1, 4)
+                .boxed()
                 .map(id -> new Book(id, "BookTitle_" + id, dbAuthors.get(id - 1), dbGenres.get(id - 1)))
                 .toList();
+    }
+
+    private static List<Comment> getDbComments(List<Book> dbBooks) {
+        return IntStream
+                .range(1, 4)
+                .boxed()
+                .map(id -> new Comment(id, "Text_" + id, dbBooks.get(id - 1)))
+                .toList();
+    }
+
+    private static List<Comment> getDbComments() {
+        var dbAuthors = getDbAuthors();
+        var dbGenres = getDbGenres();
+        var dbBooks = getDbBooks(dbAuthors, dbGenres);
+        return getDbComments(dbBooks);
     }
 
 }

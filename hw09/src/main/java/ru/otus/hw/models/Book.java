@@ -16,12 +16,14 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.Builder;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
+@Builder
 @Table(name = "books")
 @NamedEntityGraph(name = "book-entity-graph",
         attributeNodes = {@NamedAttributeNode("author"), @NamedAttributeNode("genre")})

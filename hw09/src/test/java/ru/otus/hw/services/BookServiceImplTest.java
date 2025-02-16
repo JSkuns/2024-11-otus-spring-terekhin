@@ -38,43 +38,56 @@ public class BookServiceImplTest {
         dbBooks = getDbBooks(dbAuthors, dbGenres);
     }
 
-    @DisplayName("должен загружать книгу по id")
     @ParameterizedTest
     @MethodSource("getDbBooks")
+    @DisplayName("должен загружать книгу по id")
     void shouldReturnCorrectBookById(Book expectedBook) {
         var actualBook = bookService.findById(expectedBook.getId());
-        assertThat(actualBook).isPresent();
+
+        assertThat(actualBook)
+                .isPresent()
+                .get()
+                .usingRecursiveComparison()
+                .isEqualTo(expectedBook);
     }
 
-    @DisplayName("должен загружать список всех книг")
     @Test
+    @DisplayName("должен загружать список всех книг")
     void shouldReturnCorrectBooksList() {
         var actualBooks = bookService.findAll();
         var expectedBooks = dbBooks;
 
-        assertThat(actualBooks.stream().map(Book::getTitle))
-                .containsExactlyElementsOf(expectedBooks.stream().map(Book::getTitle).toList());
-        actualBooks.forEach(System.out::println);
+        assertThat(actualBooks)
+                .usingRecursiveFieldByFieldElementComparatorIgnoringFields()
+                .containsExactlyElementsOf(expectedBooks);
     }
 
-    @DisplayName("должен сохранять новую книгу")
     @Test
+    @DisplayName("должен сохранять новую книгу")
     void shouldSaveNewBook() {
         var expectedBook = new Book(0, "BookTitle_10500", dbAuthors.get(0), dbGenres.get(0));
         var returnedBook = bookService
                 .insert(expectedBook.getTitle(), expectedBook.getAuthor().getId(), expectedBook.getGenre().getId());
-        assertThat(returnedBook).isNotNull()
-                .matches(book -> book.getId() > 0);
+
+        assertThat(returnedBook)
+                .isNotNull()
+                .matches(book -> book.getId() != 0)
+                .usingRecursiveComparison()
+                .ignoringExpectedNullFields()
+                .ignoringFields("id")
+                .isEqualTo(expectedBook);
+
         assertThat(bookService.findById(returnedBook.getId()))
                 .isPresent()
                 .get()
+                .usingRecursiveComparison()
                 .isEqualTo(returnedBook);
     }
 
-    @DisplayName("должен сохранять измененную книгу")
     @Test
+    @DisplayName("должен сохранять измененную книгу")
     void shouldSaveUpdatedBook() {
-        var expectedBook = new Book(1L, "BookTitle_10500", dbAuthors.get(2), dbGenres.get(2));
+        var expectedBook = new Book(1, "BookTitle_10500", dbAuthors.get(2), dbGenres.get(2));
 
         assertThat(bookService.findById(expectedBook.getId()))
                 .isPresent()
@@ -84,37 +97,51 @@ public class BookServiceImplTest {
         var returnedBook = bookService
                 .update(expectedBook.getId(), expectedBook.getTitle(), expectedBook.getAuthor().getId(), expectedBook.getGenre().getId());
         assertThat(returnedBook).isNotNull()
-                .matches(book -> book.getId() > 0)
-                .usingRecursiveComparison().ignoringExpectedNullFields().isEqualTo(expectedBook);
+                .matches(book -> book.getId() != 0)
+                .usingRecursiveComparison()
+                .isEqualTo(expectedBook);
 
         assertThat(bookService.findById(returnedBook.getId()))
                 .isPresent()
                 .get()
+                .usingRecursiveComparison()
                 .isEqualTo(returnedBook);
     }
 
-    @DisplayName("должен удалять книгу по id ")
     @Test
+    @DisplayName("должен удалять книгу по id ")
     void shouldDeleteBook() {
-        assertThat(bookService.findById(1L)).isPresent();
-        bookService.deleteById(1L);
-        assertThat(bookService.findById(1L)).isEmpty();
+        var testId = 1;
+
+        assertThat(bookService.findById(testId))
+                .isPresent();
+
+        bookService.deleteById(testId);
+
+        assertThat(bookService.findById(testId))
+                .isEmpty();
     }
 
     private static List<Author> getDbAuthors() {
-        return IntStream.range(1, 4).boxed()
+        return IntStream
+                .range(1, 4)
+                .boxed()
                 .map(id -> new Author(id, "Author_" + id))
                 .toList();
     }
 
     private static List<Genre> getDbGenres() {
-        return IntStream.range(1, 4).boxed()
+        return IntStream
+                .range(1, 4)
+                .boxed()
                 .map(id -> new Genre(id, "Genre_" + id))
                 .toList();
     }
 
     private static List<Book> getDbBooks(List<Author> dbAuthors, List<Genre> dbGenres) {
-        return IntStream.range(1, 4).boxed()
+        return IntStream
+                .range(1, 4)
+                .boxed()
                 .map(id -> new Book(id, "BookTitle_" + id, dbAuthors.get(id - 1), dbGenres.get(id - 1)))
                 .toList();
     }
