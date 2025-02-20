@@ -4,7 +4,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.otus.hw.exceptions.EntityNotFoundException;
+import ru.otus.hw.dto.mappers.impl.BookDtoMapper;
+import ru.otus.hw.dto.models.book.BookCreateDto;
+import ru.otus.hw.dto.models.book.BookDto;
+import ru.otus.hw.dto.models.book.BookUpdateDto;
+import ru.otus.hw.exceptions.NotFoundException;
 import ru.otus.hw.models.Author;
 import ru.otus.hw.models.Book;
 import ru.otus.hw.models.Genre;
@@ -14,7 +18,7 @@ import ru.otus.hw.repositories.GenreRepository;
 import ru.otus.hw.services.BookService;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.Objects;
 
 @Slf4j
 @Service
@@ -27,44 +31,50 @@ public class BookServiceImpl implements BookService {
 
     private final BookRepository bookRepository;
 
+    private final BookDtoMapper bookDtoMapper;
+
     @Override
     @Transactional(readOnly = true)
-    public Optional<Book> findById(long id) {
-        return bookRepository.findById(id);
+    public BookDto findById(long id) {
+        var book = bookRepository.findById(id).orElse(null);
+        return bookDtoMapper.toDto(Objects.requireNonNull(book));
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<Book> findAll() {
-        return bookRepository.findAll();
+    public List<BookDto> findAll() {
+        List<Book> books = bookRepository.findAll();
+        return bookDtoMapper.toDto(books);
     }
 
     @Override
     @Transactional
-    public Book insert(String title, long authorId, long genreId) {
-        var author = findAuthorById(authorId);
-        var genre = findGenreById(genreId);
-        var book = new Book(0, title, author, genre);
-        return bookRepository.save(book);
+    public BookDto create(BookCreateDto createDto) {
+        var author = findAuthorById(createDto.getAuthorId());
+        var genre = findGenreById(createDto.getGenreId());
+        var book = new Book(0, createDto.getTitle(), author, genre);
+        var retVal = bookRepository.save(book);
+        return bookDtoMapper.toDto(retVal);
     }
 
     @Override
     @Transactional
-    public Book update(long id, String title, long authorId, long genreId) {
-        var book = bookRepository.findById(id)
+    public BookDto update(BookUpdateDto updateDto) {
+        var book = bookRepository.findById(updateDto.getId())
                 .orElseThrow(() -> {
-                    var errMsg = "Book with id %s not found".formatted(id);
+                    var errMsg = "Book with id %s not found".formatted(updateDto.getId());
                     log.error(errMsg);
-                    return new EntityNotFoundException(errMsg);
+                    return new NotFoundException(errMsg);
                 });
-        var author = findAuthorById(authorId);
-        var genre = findGenreById(genreId);
+        var author = findAuthorById(updateDto.getAuthorId());
+        var genre = findGenreById(updateDto.getGenreId());
 
-        book.setTitle(title);
+        book.setTitle(updateDto.getTitle());
         book.setAuthor(author);
         book.setGenre(genre);
 
-        return bookRepository.save(book);
+        var retVal = bookRepository.save(book);
+        return bookDtoMapper.toDto(retVal);
     }
 
     @Override
@@ -79,7 +89,7 @@ public class BookServiceImpl implements BookService {
                 .orElseThrow(() -> {
                     var errMsg = "Genre with id %s not found".formatted(genreId);
                     log.error(errMsg);
-                    return new EntityNotFoundException(errMsg);
+                    return new NotFoundException(errMsg);
                 });
     }
 
@@ -88,7 +98,7 @@ public class BookServiceImpl implements BookService {
                 .orElseThrow(() -> {
                     var errMsg = "Author with id %s not found".formatted(authorId);
                     log.error(errMsg);
-                    return new EntityNotFoundException(errMsg);
+                    return new NotFoundException(errMsg);
                 });
     }
 

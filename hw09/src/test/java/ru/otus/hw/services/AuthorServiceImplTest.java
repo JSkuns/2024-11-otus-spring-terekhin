@@ -6,11 +6,12 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
-import ru.otus.hw.models.Author;
+import ru.otus.hw.dto.mappers.impl.AuthorDtoMapper;
+import ru.otus.hw.dto.models.author.AuthorDto;
 import ru.otus.hw.services.impl.AuthorServiceImpl;
 
 @DataJpaTest
-@Import(AuthorServiceImpl.class)
+@Import({AuthorServiceImpl.class, AuthorDtoMapper.class})
 public class AuthorServiceImplTest {
 
     @Autowired
@@ -25,7 +26,7 @@ public class AuthorServiceImplTest {
         Assertions.assertFalse(
                 authorsList
                         .stream()
-                        .map(Author::getId)
+                        .map(AuthorDto::getId)
                         .anyMatch(elt -> elt == -123)
         );
     }
@@ -39,7 +40,7 @@ public class AuthorServiceImplTest {
         Assertions.assertTrue(
                 authorsList
                         .stream()
-                        .map(Author::getId)
+                        .map(AuthorDto::getId)
                         .anyMatch(elt -> elt == 2)
         );
     }

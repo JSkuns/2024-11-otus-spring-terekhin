@@ -1,16 +1,18 @@
 package ru.otus.hw.controllers;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
-import ru.otus.hw.models.Author;
-import ru.otus.hw.models.Book;
-import ru.otus.hw.models.Genre;
-import ru.otus.hw.services.AuthorService;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
+import ru.otus.hw.dto.models.author.AuthorDto;
+import ru.otus.hw.dto.models.book.BookCreateDto;
+import ru.otus.hw.dto.models.book.BookDto;
+import ru.otus.hw.dto.models.book.BookUpdateDto;
+import ru.otus.hw.dto.models.genre.GenreDto;
 import ru.otus.hw.services.BookService;
-import ru.otus.hw.services.GenreService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,18 +30,12 @@ public class BooksControllerTest {
     @MockBean
     private BookService booksService;
 
-    @MockBean
-    private AuthorService authorsService;
-
-    @MockBean
-    private GenreService genresService;
-
     @Autowired
     private MockMvc mvc;
 
     @Test
     void shouldReturnAllBooks() throws Exception {
-        List<Book> expectedBooks = getExpectedBooks();
+        List<BookDto> expectedBooks = getExpectedBooks();
         given(booksService.findAll()).willReturn(expectedBooks);
         mvc.perform(get("/books"))
                 .andExpect(status().isOk())
@@ -48,20 +44,38 @@ public class BooksControllerTest {
 
     @Test
     void shouldInsertNewBook() throws Exception {
-        mvc.perform(post("/books/insert?title=%s&author_id=%d&genre_id=%d"
-                        .formatted("test", 1, 2)))
+        BookCreateDto bookCreateDto = new BookCreateDto("test", 1, 2);
+        mvc.perform(post("/books/create").flashAttr("book_create_obj", bookCreateDto))
                 .andExpect(status().isFound())
                 .andExpect(view().name("redirect:/books"));
-        verify(booksService).insert(any(String.class), any(Long.class), any(Long.class));
+        verify(booksService).create(bookCreateDto);
+    }
+
+    @Test
+    void shouldThrownNullPointerException() throws Exception {
+        var result = mvc.perform(get("/books/find?book_id=%d".formatted(-2)));
+        result
+                .andExpect(status().isOk())
+                .andExpect(view().name("error"));
+        Assertions.assertInstanceOf(NullPointerException.class, result.andReturn().getResolvedException());
     }
 
     @Test
     void shouldUpdateBook() throws Exception {
-        mvc.perform(post("/books/update?id=%d&title=%s&author_id=%d&genre_id=%d"
-                        .formatted(1, "test", 2, 2)))
+        BookUpdateDto bookUpdateDto = new BookUpdateDto(1, "test", 2, 2);
+        mvc.perform(post("/books/update").flashAttr("book_update_obj", bookUpdateDto))
                 .andExpect(status().isFound())
                 .andExpect(view().name("redirect:/books"));
-        verify(booksService).update(any(Long.class), any(String.class), any(Long.class), any(Long.class));
+        verify(booksService).update(bookUpdateDto);
+    }
+
+    @Test
+    void shouldThrownInternalServerError500() throws Exception {
+        var result = mvc.perform(post("/booksss/update?err"));
+        result
+                .andExpect(status().isOk())
+                .andExpect(view().name("error"));
+        Assertions.assertInstanceOf(NoResourceFoundException.class, result.andReturn().getResolvedException());
     }
 
     @Test
@@ -75,36 +89,36 @@ public class BooksControllerTest {
 
     @Test
     void shouldFoundBook() throws Exception {
-        mvc.perform(get("/books/find?book_id=%d"
-                        .formatted(1)))
-                .andExpect(status().isFound())
-                .andExpect(view().name("redirect:/books"));
+        given(booksService.findById(2)).willReturn(getExpectedBooks().get(1));
+        mvc.perform(get("/books/find?book_id=%d".formatted(2)))
+                .andExpect(status().isOk())
+                .andExpect(view().name("books"));
         verify(booksService).findById(any(Long.class));
     }
 
-    private List<Genre> getExpectedGenres() {
-        List<Genre> genres = new ArrayList<>();
-        genres.add(Genre.builder().id(1).name("Genre_1").build());
-        genres.add(Genre.builder().id(2).name("Genre_2").build());
-        genres.add(Genre.builder().id(3).name("Genre_3").build());
+    private List<GenreDto> getExpectedGenres() {
+        List<GenreDto> genres = new ArrayList<>();
+        genres.add(GenreDto.builder().id(1).name("Genre_1").build());
+        genres.add(GenreDto.builder().id(2).name("Genre_2").build());
+        genres.add(GenreDto.builder().id(3).name("Genre_3").build());
         return genres;
     }
 
-    private List<Author> getExpectedAuthors() {
-        List<Author> authors = new ArrayList<>();
-        authors.add(Author.builder().id(1).fullName("Author_1").build());
-        authors.add(Author.builder().id(2).fullName("Author_2").build());
-        authors.add(Author.builder().id(3).fullName("Author_3").build());
+    private List<AuthorDto> getExpectedAuthors() {
+        List<AuthorDto> authors = new ArrayList<>();
+        authors.add(AuthorDto.builder().id(1).fullName("Author_1").build());
+        authors.add(AuthorDto.builder().id(2).fullName("Author_2").build());
+        authors.add(AuthorDto.builder().id(3).fullName("Author_3").build());
         return authors;
     }
 
-    private List<Book> getExpectedBooks() {
-        List<Author> authors = getExpectedAuthors();
-        List<Genre> genres = getExpectedGenres();
-        List<Book> books = new ArrayList<>();
-        books.add(Book.builder().id(1).title("BookTitle_1").author(authors.get(0)).genre(genres.get(0)).build());
-        books.add(Book.builder().id(2).title("BookTitle_2").author(authors.get(1)).genre(genres.get(1)).build());
-        books.add(Book.builder().id(3).title("BookTitle_3").author(authors.get(2)).genre(genres.get(2)).build());
+    private List<BookDto> getExpectedBooks() {
+        List<AuthorDto> authors = getExpectedAuthors();
+        List<GenreDto> genres = getExpectedGenres();
+        List<BookDto> books = new ArrayList<>();
+        books.add(BookDto.builder().id(1).title("BookTitle_1").author(authors.get(0)).genre(genres.get(0)).build());
+        books.add(BookDto.builder().id(2).title("BookTitle_2").author(authors.get(1)).genre(genres.get(1)).build());
+        books.add(BookDto.builder().id(3).title("BookTitle_3").author(authors.get(2)).genre(genres.get(2)).build());
         return books;
     }
 

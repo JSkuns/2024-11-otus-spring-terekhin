@@ -77,18 +77,18 @@
 <hr>
 
 </body>
-<form th:method="post" th:action="@{/books/insert}" class="align-middle text-center">
+<form th:method="POST" th:action="@{/books/create}" th:object="${book_create_obj}" class="align-middle text-center">
     <div>
         <label for="title-input">Enter the title of the new book -></label>
-        <input id="title-input" type="text" name="title">
+        <input id="title-input" type="text" th:field="*{title}">
     </div>
     <div>
         <label for="author-id-input">Enter the Id of the author of the new book -></label>
-        <input id="author-id-input" type="text" name="author_id">
+        <input id="author-id-input" type="text" th:field="*{authorId}">
     </div>
     <div>
         <label for="genre-id-input">Enter the genre Id of the new book -></label>
-        <input id="genre-id-input" type="text" name="genre_id">
+        <input id="genre-id-input" type="text" th:field="*{genreId}">
     </div>
     <div>
         <button type="submit" class="btn btn-success rounded-pill px-3">Add new book</button>
@@ -105,22 +105,22 @@
 </div>
 <hr>
 
-<form th:method="post" th:action="@{/books/update}" class="align-middle text-center">
+<form th:method="post" th:action="@{/books/update}" th:object="${book_update_obj}" th:name="upd_obj" class="align-middle text-center">
     <div>
         <label for="id-update-input">Enter the Id of the book you want to edit -></label>
-        <input id="id-update-input" type="text" name="id">
+        <input id="id-update-input" type="text" th:field="*{id}">
     </div>
     <div>
         <label for="title-update-input">Enter a new title for the book -></label>
-        <input id="title-update-input" type="text" name="title">
+        <input id="title-update-input" type="text" th:field="*{title}">
     </div>
     <div>
         <label for="author-update-id-input">Enter the new author's Id for the book -></label>
-        <input id="author-update-id-input" type="text" name="author_id">
+        <input id="author-update-id-input" type="text" th:field="*{authorId}">
     </div>
     <div>
         <label for="genre-update-id-input">Enter the new genre's Id for the book -></label>
-        <input id="genre-update-id-input" type="text" name="genre_id">
+        <input id="genre-update-id-input" type="text" th:field="*{genreId}">
     </div>
     <div>
         <button type="submit" class="btn btn-warning rounded-pill px-3">Update book</button>

@@ -1,13 +1,11 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
 
-
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <title>Library | Error</title>
     <link href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
 </head>
-
 
 <style>
     h1 {
@@ -16,25 +14,20 @@
     }
 </style>
 
-
 <body class="container">
-
 
 <ol class="breadcrumb p-3 bg-body-tertiary rounded-3">
     <li class="breadcrumb-item"><a th:href="'/'">Home</a></li>
     <li class="breadcrumb-item"><a th:href="'/error'">Error</a></li>
 </ol>
 
-
 <h1 class="align-middle text-center">
     Library | Error
 </h1>
 
-
-<h2 class="align-middle text-center">
+<h2 class="align-middle text-center" th:text="${error_message}">
     Oops, an error has occurred.
 </h2>
-
 
 </body>
 

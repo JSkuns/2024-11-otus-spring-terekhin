@@ -6,7 +6,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import ru.otus.hw.exceptions.EntityNotFoundException;
+import ru.otus.hw.exceptions.NotFoundException;
 import ru.otus.hw.models.Comment;
 import ru.otus.hw.services.CommentService;
 
@@ -61,7 +61,7 @@ public class CommentsController {
         }
         try {
             commentService.insert(bookIdLong, text);
-        } catch (EntityNotFoundException e) {
+        } catch (NotFoundException e) {
             return "redirect:/comments";
         }
         return "redirect:/comments";
@@ -78,7 +78,7 @@ public class CommentsController {
         }
         try {
             commentService.update(idLong, text);
-        } catch (EntityNotFoundException e) {
+        } catch (NotFoundException e) {
             return "redirect:/comments";
         }
         return "redirect:/comments";

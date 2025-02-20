@@ -6,11 +6,13 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
+import ru.otus.hw.dto.mappers.impl.GenreDtoMapper;
+import ru.otus.hw.dto.models.genre.GenreDto;
 import ru.otus.hw.models.Genre;
 import ru.otus.hw.services.impl.GenreServiceImpl;
 
 @DataJpaTest
-@Import(GenreServiceImpl.class)
+@Import({GenreServiceImpl.class, GenreDtoMapper.class})
 public class GenreServiceImplTest {
 
     @Autowired
@@ -25,7 +27,7 @@ public class GenreServiceImplTest {
         Assertions.assertFalse(
                 genresList
                         .stream()
-                        .map(Genre::getId)
+                        .map(GenreDto::getId)
                         .anyMatch(elt -> elt == -321)
         );
     }
@@ -39,7 +41,7 @@ public class GenreServiceImplTest {
         Assertions.assertTrue(
                 genresList
                         .stream()
-                        .map(Genre::getId)
+                        .map(GenreDto::getId)
                         .anyMatch(elt -> elt == 3)
         );
     }
