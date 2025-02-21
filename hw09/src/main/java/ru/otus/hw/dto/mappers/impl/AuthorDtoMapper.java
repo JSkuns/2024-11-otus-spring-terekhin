@@ -5,24 +5,22 @@ import ru.otus.hw.dto.mappers.DtoMapper;
 import ru.otus.hw.dto.models.author.AuthorDto;
 import ru.otus.hw.models.Author;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 public class AuthorDtoMapper implements DtoMapper<AuthorDto, Author> {
 
     @Override
     public AuthorDto toDto(Author source) {
-        AuthorDto dto = new AuthorDto();
-        dto.setId(source.getId());
-        dto.setFullName(source.getFullName());
-        return dto;
+        return new AuthorDto(source.getId(), source.getFullName());
     }
 
     public List<AuthorDto> toDto(List<Author> authorList) {
-        List<AuthorDto> authorDtoList = new ArrayList<>(authorList.size());
-        authorList.forEach(author -> authorDtoList.add(toDto(author)));
-        return authorDtoList;
+        return authorList
+                .stream()
+                .map(this::toDto)
+                .collect(Collectors.toList());
     }
 
     @Override

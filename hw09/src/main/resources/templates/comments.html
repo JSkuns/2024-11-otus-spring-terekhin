@@ -71,14 +71,14 @@
 <hr>
 
 </body>
-<form th:method="post" th:action="@{/comments/insert}" class="align-middle text-center">
+<form th:method="post" th:action="@{/comments/create}" th:object="${comment_create_obj}" class="align-middle text-center">
     <div>
         <label for="book-id-input">Enter the Id of the book of the new comment -></label>
-        <input id="book-id-input" type="text" name="book_id">
+        <input id="book-id-input" type="text" th:field="*{bookId}">
     </div>
     <div>
         <label for="text-input">Enter the text of the new comment -></label>
-        <input id="text-input" type="text" name="text">
+        <input id="text-input" type="text" th:field="*{text}">
     </div>
     <div>
         <button type="submit" class="btn btn-success rounded-pill px-3">Add new comment</button>
@@ -95,14 +95,14 @@
 </div>
 <hr>
 
-<form th:method="post" th:action="@{/comments/update}" class="align-middle text-center">
+<form th:method="post" th:action="@{/comments/update}" th:object="${comment_update_obj}" class="align-middle text-center">
     <div>
         <label for="id-update-input">Enter the Id of the comment you want to edit -></label>
-        <input id="id-update-input" type="text" name="id">
+        <input id="id-update-input" type="text" th:field="*{id}">
     </div>
     <div>
         <label for="text-update-input">Enter a new text for the comment -></label>
-        <input id="text-update-input" type="text" name="text">
+        <input id="text-update-input" type="text" th:field="*{text}">
     </div>
     <div>
         <button type="submit" class="btn btn-warning rounded-pill px-3">Update comment</button>

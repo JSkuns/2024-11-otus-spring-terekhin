@@ -6,8 +6,8 @@ import ru.otus.hw.dto.mappers.DtoMapper;
 import ru.otus.hw.dto.models.book.BookDto;
 import ru.otus.hw.models.Book;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 @AllArgsConstructor
@@ -28,9 +28,10 @@ public class BookDtoMapper implements DtoMapper<BookDto, Book> {
     }
 
     public List<BookDto> toDto(List<Book> bookList) {
-        List<BookDto> bookDtoList = new ArrayList<>(bookList.size());
-        bookList.forEach(book -> bookDtoList.add(toDto(book)));
-        return bookDtoList;
+        return bookList
+                .stream()
+                .map(this::toDto)
+                .collect(Collectors.toList());
     }
 
     @Override

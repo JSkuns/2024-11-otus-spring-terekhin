@@ -5,24 +5,22 @@ import ru.otus.hw.dto.mappers.DtoMapper;
 import ru.otus.hw.dto.models.genre.GenreDto;
 import ru.otus.hw.models.Genre;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 public class GenreDtoMapper implements DtoMapper<GenreDto, Genre> {
 
     @Override
     public GenreDto toDto(Genre source) {
-        GenreDto dto = new GenreDto();
-        dto.setId(source.getId());
-        dto.setName(source.getName());
-        return dto;
+        return new GenreDto(source.getId(), source.getName());
     }
 
     public List<GenreDto> toDto(List<Genre> genreList) {
-        List<GenreDto> genreDtoList = new ArrayList<>(genreList.size());
-        genreList.forEach(genre -> genreDtoList.add(toDto(genre)));
-        return genreDtoList;
+        return genreList
+                .stream()
+                .map(this::toDto)
+                .collect(Collectors.toList());
     }
 
     @Override

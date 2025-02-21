@@ -105,7 +105,7 @@
 </div>
 <hr>
 
-<form th:method="post" th:action="@{/books/update}" th:object="${book_update_obj}" th:name="upd_obj" class="align-middle text-center">
+<form th:method="post" th:action="@{/books/update}" th:object="${book_update_obj}" class="align-middle text-center">
     <div>
         <label for="id-update-input">Enter the Id of the book you want to edit -></label>
         <input id="id-update-input" type="text" th:field="*{id}">
