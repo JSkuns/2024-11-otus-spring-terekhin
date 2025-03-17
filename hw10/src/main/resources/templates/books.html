@@ -7,6 +7,42 @@
     <title>Library | Books</title>
     <link href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
 
+    <script>
+        function getDataByFetch() {
+            fetch('books/all')
+                 .then(response => response.json())
+                 .then(json => outputData(json))
+                 .catch(error => console.error('Error:', error));
+        }
+
+        function getDataByFetchFind() {
+            fetch('books/find')
+                .then(response => response.json())
+                .then(json => outputDataFind(json))
+                .catch(error => console.error('Error:', error));
+        }
+    
+        function outputData(books) {
+            let parent = document.querySelector('#dataContainer');
+            books.forEach(book => {
+                let tr = document.createElement('tr');
+                let td1 = document.createElement('td');
+                let td2 = document.createElement('td');
+                let td3 = document.createElement('td');
+                let td4 = document.createElement('td');
+                td1.textContent = book.id;
+                td2.textContent = book.title;
+                td3.textContent = book.author.id;
+                td4.textContent = book.genre.id;
+	            tr.appendChild(td1);
+                tr.appendChild(td2);
+                tr.appendChild(td3);
+                tr.appendChild(td4);
+	            parent.appendChild(tr);
+            });
+        }
+    </script>
+
 </head>
 
 
@@ -23,7 +59,7 @@
 </style>
 
 
-<body class="container">
+<body class="container" onload="getDataByFetch()">
 
 
 <!-- Breadcrumb -->
@@ -56,13 +92,7 @@
         <th>Book.Genre (Id / Name)</th>
     </tr>
     </thead>
-    <tbody>
-    <tr th:each="book : ${books}">
-        <td th:text="${book.id}">1</td>
-        <td th:text="${book.title}">Test book title</td>
-        <td th:text="${book.getAuthor().id} + ' / ' + ${book.getAuthor().fullName}">1 / Test author</td>
-        <td th:text="${book.getGenre().id} + ' / ' + ${book.getGenre().name}">1 / Test genre</td>
-    </tr>
+    <tbody id="dataContainer">
     </tbody>
 </table>
 
@@ -143,7 +173,7 @@
         <input id="id-find-input" type="text" name="book_id">
     </div>
     <div>
-        <button type="submit" class="btn btn-info rounded-pill px-3">Find</button>
+        <button type="submit" class="btn btn-info rounded-pill px-3" onclick="getDataByFetchFind()">Find</button>
     </div>
 </form>
 

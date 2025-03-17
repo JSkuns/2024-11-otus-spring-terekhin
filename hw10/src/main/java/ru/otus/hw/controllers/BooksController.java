@@ -9,11 +9,8 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import ru.otus.hw.dto.models.book.BookCreateDto;
-import ru.otus.hw.dto.models.book.BookDto;
 import ru.otus.hw.dto.models.book.BookUpdateDto;
 import ru.otus.hw.services.BookService;
-
-import java.util.List;
 
 /**
  * <a href="http://localhost:8080/books">...</a>
@@ -26,8 +23,6 @@ public class BooksController {
 
     @GetMapping(path = "/books")
     public String index(Model model) {
-        var bookDtoList = bookService.findAll();
-        model.addAttribute("books", bookDtoList);
         addObjectsOnView(model);
         return "books";
     }
@@ -48,15 +43,6 @@ public class BooksController {
     public String updateBook(@Valid @ModelAttribute(value = "book_update_obj") BookUpdateDto updateDto) {
         bookService.update(updateDto);
         return "redirect:/books";
-    }
-
-    @GetMapping(path = "/books/find")
-    public String findBookById(@RequestParam(value = "book_id") String id, Model model) {
-        var book = bookService.findById(Long.parseLong(id));
-        List<BookDto> bookDtoList = List.of(book);
-        model.addAttribute("books", bookDtoList);
-        addObjectsOnView(model);
-        return "books";
     }
 
     private void addObjectsOnView(Model model) {
