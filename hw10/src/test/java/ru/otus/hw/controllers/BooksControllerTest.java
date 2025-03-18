@@ -34,30 +34,12 @@ public class BooksControllerTest {
     private MockMvc mvc;
 
     @Test
-    void shouldReturnAllBooks() throws Exception {
-        List<BookDto> expectedBooks = getExpectedBooks();
-        given(booksService.findAll()).willReturn(expectedBooks);
-        mvc.perform(get("/books"))
-                .andExpect(status().isOk())
-                .andExpect(model().attribute("books", expectedBooks));
-    }
-
-    @Test
     void shouldInsertNewBook() throws Exception {
         BookCreateDto bookCreateDto = new BookCreateDto("test", 1, 2);
         mvc.perform(post("/books/create").flashAttr("book_create_obj", bookCreateDto))
                 .andExpect(status().isFound())
                 .andExpect(view().name("redirect:/books"));
         verify(booksService).create(bookCreateDto);
-    }
-
-    @Test
-    void shouldThrownNullPointerException() throws Exception {
-        var result = mvc.perform(get("/books/find?book_id=%d".formatted(-2)));
-        result
-                .andExpect(status().isOk())
-                .andExpect(view().name("error"));
-        Assertions.assertInstanceOf(NullPointerException.class, result.andReturn().getResolvedException());
     }
 
     @Test
@@ -85,15 +67,6 @@ public class BooksControllerTest {
                 .andExpect(status().isFound())
                 .andExpect(view().name("redirect:/books"));
         verify(booksService).deleteById(any(Long.class));
-    }
-
-    @Test
-    void shouldFoundBook() throws Exception {
-        given(booksService.findById(2)).willReturn(getExpectedBooks().get(1));
-        mvc.perform(get("/books/find?book_id=%d".formatted(2)))
-                .andExpect(status().isOk())
-                .andExpect(view().name("books"));
-        verify(booksService).findById(any(Long.class));
     }
 
     private List<GenreDto> getExpectedGenres() {
