@@ -8,39 +8,68 @@
     <link href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
 
     <script>
-        function getDataByFetch() {
-            fetch('books/all')
-                 .then(response => response.json())
-                 .then(json => outputData(json))
-                 .catch(error => console.error('Error:', error));
+        async function getBooks() {
+            try {
+                const response = await fetch('/books/all'); // Получение всех книг
+                const books = await response.json(); // Преобразование ответа в JSON
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                displayBooks(books); // Вызываем функцию для отображения книг
+            } catch (error) {
+                console.error('Error:', error);
+            }
         }
 
-        function getDataByFetchFind() {
-            fetch('books/find')
-                .then(response => response.json())
-                .then(json => outputDataFind(json))
-                .catch(error => console.error('Error:', error));
+        async function findBookById() {
+            try {
+                const id = document.getElementById('id-find-input').value
+                const path = `/books/${id}`; // Путь
+                // const path = `/books/3`; // Путь
+                console.log(path);
+                const response = await fetch(path); // Поиск книги по ID
+                const book = await response.json(); // Преобразование ответа в JSON
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                displayFoundBook(book); // Вызываем функцию для отображения найденной книги
+            } catch (error) {
+                console.error('Error:', error);
+            }
         }
-    
-        function outputData(books) {
-            let parent = document.querySelector('#dataContainer');
+
+        function displayBooks(books) {
+            const tableBody = document.querySelector('#books-table tbody');
+            tableBody.innerHTML = ''; // Очистка таблицы перед добавлением новых данных
             books.forEach(book => {
-                let tr = document.createElement('tr');
-                let td1 = document.createElement('td');
-                let td2 = document.createElement('td');
-                let td3 = document.createElement('td');
-                let td4 = document.createElement('td');
-                td1.textContent = book.id;
-                td2.textContent = book.title;
-                td3.textContent = book.author.id;
-                td4.textContent = book.genre.id;
-	            tr.appendChild(td1);
-                tr.appendChild(td2);
-                tr.appendChild(td3);
-                tr.appendChild(td4);
-	            parent.appendChild(tr);
+                displaySingleBook(book);
             });
         }
+
+        function displaySingleBook(book) {
+            const tableBody = document.querySelector('#books-table tbody');
+            const row = document.createElement('tr');
+            const cell1 = document.createElement('td');
+            const cell2 = document.createElement('td');
+            const cell3 = document.createElement('td');
+            const cell4 = document.createElement('td');
+            cell1.textContent = book.id;
+            cell2.textContent = book.title;
+            cell3.textContent = book.author.id;
+            cell4.textContent = book.genre.id;
+            row.appendChild(cell1);
+            row.appendChild(cell2);
+            row.appendChild(cell3);
+            row.appendChild(cell4);
+            tableBody.appendChild(row);
+        }
+
+        function displayFoundBook(book) {
+            const foundTableBody = document.querySelector('#books-table tbody');
+            foundTableBody.innerHTML = ''; // Очистка таблицы перед добавлением новой записи
+            displaySingleBook(book);
+        }
+
     </script>
 
 </head>
@@ -59,7 +88,9 @@
 </style>
 
 
-<body class="container" onload="getDataByFetch()">
+<body class="container" onload="getBooks()">
+<!--<body class="container" onload="findBookById(3)">-->
+<!--<body class="container">-->
 
 
 <!-- Breadcrumb -->
@@ -83,7 +114,8 @@
 </div>
 <hr>
 
-<table class="table table-striped table-bordered">
+<!-- Таблица, где отображаются все книги, либо одна книга, если поиск по id -->
+<table class="table table-striped table-bordered" id="books-table">
     <thead class="align-middle text-center">
     <tr>
         <th>Book.Id</th>
@@ -92,70 +124,70 @@
         <th>Book.Genre (Id / Name)</th>
     </tr>
     </thead>
-    <tbody id="dataContainer">
+    <tbody>
     </tbody>
 </table>
 
 
-<!-- Insert new book -->
-<hr>
-<div>
-    <h4 class="align-middle text-center">
-        Insert new book
-    </h4>
-</div>
-<hr>
+<!--&lt;!&ndash; Insert new book &ndash;&gt;-->
+<!--<hr>-->
+<!--<div>-->
+<!--    <h4 class="align-middle text-center">-->
+<!--        Insert new book-->
+<!--    </h4>-->
+<!--</div>-->
+<!--<hr>-->
 
-</body>
-<form th:method="POST" th:action="@{/books/create}" th:object="${book_create_obj}" class="align-middle text-center">
-    <div>
-        <label for="title-input">Enter the title of the new book -></label>
-        <input id="title-input" type="text" th:field="*{title}">
-    </div>
-    <div>
-        <label for="author-id-input">Enter the Id of the author of the new book -></label>
-        <input id="author-id-input" type="text" th:field="*{authorId}">
-    </div>
-    <div>
-        <label for="genre-id-input">Enter the genre Id of the new book -></label>
-        <input id="genre-id-input" type="text" th:field="*{genreId}">
-    </div>
-    <div>
-        <button type="submit" class="btn btn-success rounded-pill px-3">Add new book</button>
-    </div>
-</form>
+<!--</body>-->
+<!--<form th:method="POST" th:action="@{/books/create}" th:object="${book_create_obj}" class="align-middle text-center">-->
+<!--    <div>-->
+<!--        <label for="title-input">Enter the title of the new book -></label>-->
+<!--        <input id="title-input" type="text" th:field="*{title}">-->
+<!--    </div>-->
+<!--    <div>-->
+<!--        <label for="author-id-input">Enter the Id of the author of the new book -></label>-->
+<!--        <input id="author-id-input" type="text" th:field="*{authorId}">-->
+<!--    </div>-->
+<!--    <div>-->
+<!--        <label for="genre-id-input">Enter the genre Id of the new book -></label>-->
+<!--        <input id="genre-id-input" type="text" th:field="*{genreId}">-->
+<!--    </div>-->
+<!--    <div>-->
+<!--        <button type="submit" class="btn btn-success rounded-pill px-3">Add new book</button>-->
+<!--    </div>-->
+<!--</form>-->
 
 
-<!-- Update book by Id -->
-<hr>
-<div>
-    <h4 class="align-middle text-center">
-        Update book by Id
-    </h4>
-</div>
-<hr>
+<!--&lt;!&ndash; Update book by Id &ndash;&gt;-->
+<!--<hr>-->
+<!--<div>-->
+<!--    <h4 class="align-middle text-center">-->
+<!--        Update book by Id-->
+<!--    </h4>-->
+<!--</div>-->
+<!--<hr>-->
 
-<form th:method="post" th:action="@{/books/update}" th:object="${book_update_obj}" class="align-middle text-center">
-    <div>
-        <label for="id-update-input">Enter the Id of the book you want to edit -></label>
-        <input id="id-update-input" type="text" th:field="*{id}">
-    </div>
-    <div>
-        <label for="title-update-input">Enter a new title for the book -></label>
-        <input id="title-update-input" type="text" th:field="*{title}">
-    </div>
-    <div>
-        <label for="author-update-id-input">Enter the new author's Id for the book -></label>
-        <input id="author-update-id-input" type="text" th:field="*{authorId}">
-    </div>
-    <div>
-        <label for="genre-update-id-input">Enter the new genre's Id for the book -></label>
-        <input id="genre-update-id-input" type="text" th:field="*{genreId}">
-    </div>
-    <div>
-        <button type="submit" class="btn btn-warning rounded-pill px-3">Update book</button>
-    </div>
-</form>
+<!--<form th:method="post" th:action="@{/books/update}" th:object="${book_update_obj}" class="align-middle text-center">-->
+<!--    <div>-->
+<!--        <label for="id-update-input">Enter the Id of the book you want to edit -></label>-->
+<!--        <input id="id-update-input" type="text" th:field="*{id}">-->
+<!--    </div>-->
+<!--    <div>-->
+<!--        <label for="title-update-input">Enter a new title for the book -></label>-->
+<!--        <input id="title-update-input" type="text" th:field="*{title}">-->
+<!--    </div>-->
+<!--    <div>-->
+<!--        <label for="author-update-id-input">Enter the new author's Id for the book -></label>-->
+<!--        <input id="author-update-id-input" type="text" th:field="*{authorId}">-->
+<!--    </div>-->
+<!--    <div>-->
+<!--        <label for="genre-update-id-input">Enter the new genre's Id for the book -></label>-->
+<!--        <input id="genre-update-id-input" type="text" th:field="*{genreId}">-->
+<!--    </div>-->
+<!--    <div>-->
+<!--        <button type="submit" class="btn btn-warning rounded-pill px-3">Update book</button>-->
+<!--    </div>-->
+<!--</form>-->
 
 
 <!-- Find book by Id -->
@@ -167,37 +199,37 @@
 </div>
 <hr>
 
-<form th:method="get" th:action="@{/books/find}" class="align-middle text-center">
+<form class="align-middle text-center">
     <div>
         <label for="id-find-input">Enter the Id of the book you want to find -></label>
-        <input id="id-find-input" type="text" name="book_id">
+        <input id="id-find-input" type="text">
     </div>
     <div>
-        <button type="submit" class="btn btn-info rounded-pill px-3" onclick="getDataByFetchFind()">Find</button>
+        <button type="button" class="btn btn-info rounded-pill px-3" onclick="findBookById()">Find</button>
     </div>
 </form>
 
 
-<!-- Delete book by Id -->
-<hr>
-<div>
-    <h4 class="align-middle text-center">
-        Delete book by Id
-    </h4>
-</div>
-<hr>
+<!--&lt;!&ndash; Delete book by Id &ndash;&gt;-->
+<!--<hr>-->
+<!--<div>-->
+<!--    <h4 class="align-middle text-center">-->
+<!--        Delete book by Id-->
+<!--    </h4>-->
+<!--</div>-->
+<!--<hr>-->
 
-<form th:method="post" th:action="@{/books/delete}" class="align-middle text-center">
-    <div>
-        <label for="id-input">Enter the Id of the book you want to delete -></label>
-        <input id="id-input" type="text" name="book_id">
-    </div>
-    <div>
-        <button type="submit" class="btn btn-danger rounded-pill px-3">Delete</button>
-    </div>
-</form>
+<!--<form th:method="post" th:action="@{/books/delete}" class="align-middle text-center">-->
+<!--    <div>-->
+<!--        <label for="id-input">Enter the Id of the book you want to delete -></label>-->
+<!--        <input id="id-input" type="text" name="book_id">-->
+<!--    </div>-->
+<!--    <div>-->
+<!--        <button type="submit" class="btn btn-danger rounded-pill px-3">Delete</button>-->
+<!--    </div>-->
+<!--</form>-->
 
-<hr>
+<!--<hr>-->
 
 </body>
 
