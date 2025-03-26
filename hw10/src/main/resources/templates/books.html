@@ -25,8 +25,6 @@
             try {
                 const id = document.getElementById('id-find-input').value
                 const path = `/books/${id}`; // Путь
-                // const path = `/books/3`; // Путь
-                console.log(path);
                 const response = await fetch(path); // Поиск книги по ID
                 const book = await response.json(); // Преобразование ответа в JSON
                 if (!response.ok) {
@@ -70,6 +68,42 @@
             displaySingleBook(book);
         }
 
+        async function deleteBook() {
+            try {
+                const id = document.getElementById('id-delete-input').value; // Получаем значение id из input
+                const path = `/books/${id}`; // Формируем путь для удаления книги
+                const response = await fetch(path, { method: 'DELETE' }); // Отправляем DELETE-запрос
+                const books = await response.json(); // Преобразование ответа в JSON
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                displayBooks(books); // Вызываем функцию для отображения книг
+            } catch (error) {
+                console.error('Ошибка:', error);
+            }
+        }
+
+        async function createBook(title, authorId, genreId) {
+            try {
+                const body = JSON.stringify({ title, authorId, genreId }); // Создаем тело запроса
+                const options = {
+                    method: 'POST', // Метод POST для создания новой книги
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body
+                };
+                const response = await fetch('/books', options); // Отправляем POST-запрос на создание книги
+                const createdBook = await response.json(); // Преобразование ответа в JSON
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return createdBook; // Возвращаем созданную книгу
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
     </script>
 
 </head>
@@ -89,8 +123,6 @@
 
 
 <body class="container" onload="getBooks()">
-<!--<body class="container" onload="findBookById(3)">-->
-<!--<body class="container">-->
 
 
 <!-- Breadcrumb -->
@@ -210,26 +242,26 @@
 </form>
 
 
-<!--&lt;!&ndash; Delete book by Id &ndash;&gt;-->
-<!--<hr>-->
-<!--<div>-->
-<!--    <h4 class="align-middle text-center">-->
-<!--        Delete book by Id-->
-<!--    </h4>-->
-<!--</div>-->
-<!--<hr>-->
+<!-- Delete book by Id -->
+<hr>
+<div>
+   <h4 class="align-middle text-center">
+       Delete book by Id
+   </h4>
+</div>
+<hr>
 
-<!--<form th:method="post" th:action="@{/books/delete}" class="align-middle text-center">-->
-<!--    <div>-->
-<!--        <label for="id-input">Enter the Id of the book you want to delete -></label>-->
-<!--        <input id="id-input" type="text" name="book_id">-->
-<!--    </div>-->
-<!--    <div>-->
-<!--        <button type="submit" class="btn btn-danger rounded-pill px-3">Delete</button>-->
-<!--    </div>-->
-<!--</form>-->
+<form class="align-middle text-center">
+   <div>
+       <label for="id-delete-input">Enter the Id of the book you want to delete -></label>
+       <input id="id-delete-input" type="text">
+   </div>
+   <div>
+       <button type="button" class="btn btn-danger rounded-pill px-3" onclick="deleteBook()">Delete</button>
+   </div>
+</form>
 
-<!--<hr>-->
+<hr>
 
 </body>
 

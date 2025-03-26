@@ -4,12 +4,11 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.ModelAndView;
 import ru.otus.hw.exceptions.NotFoundException;
 
 @Log4j2
-@RestControllerAdvice
+@ControllerAdvice
 public class DefaultExceptionHandler {
 
     @ExceptionHandler(NullPointerException.class)

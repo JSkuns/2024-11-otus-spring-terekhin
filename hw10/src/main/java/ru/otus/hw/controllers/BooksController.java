@@ -7,9 +7,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import ru.otus.hw.dto.models.book.BookCreateDto;
-import ru.otus.hw.dto.models.book.BookDto;
 import ru.otus.hw.dto.models.book.BookUpdateDto;
 import ru.otus.hw.services.BookService;
 
@@ -28,12 +26,6 @@ public class BooksController {
         return "books";
     }
 
-    @PostMapping(path = "/books/delete")
-    public String deleteBook(@RequestParam(value = "book_id") String id) {
-        bookService.deleteById(Long.parseLong(id));
-        return "redirect:/books";
-    }
-
     @PostMapping(path = "/books/create")
     public String createBook(@Valid @ModelAttribute(value = "book_create_obj") BookCreateDto createDto) {
         bookService.create(createDto);
@@ -47,7 +39,7 @@ public class BooksController {
     }
 
     private void addObjectsOnView(Model model) {
-        model.addAttribute("book_id", long.class);
+//        model.addAttribute("book_id", long.class);
         model.addAttribute("book_create_obj", new BookCreateDto());
         model.addAttribute("book_update_obj", new BookUpdateDto());
     }

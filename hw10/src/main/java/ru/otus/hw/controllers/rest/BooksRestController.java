@@ -26,4 +26,10 @@ public class BooksRestController {
         return ResponseEntity.ok(bookService.findById(book_id));
     }
 
+    @DeleteMapping(path = "/{book_id}")
+    public List<BookDto> deleteBook(@PathVariable(value = "book_id") Long book_id) {
+        bookService.deleteById(book_id);
+        return bookService.findAll();
+    }
+
 }
