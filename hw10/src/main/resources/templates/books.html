@@ -10,11 +10,8 @@
     <script>
         async function getBooks() {
             try {
-                const response = await fetch('/books/all'); // Получение всех книг
+                const response = await fetch('/books/'); // Получение всех книг
                 const books = await response.json(); // Преобразование ответа в JSON
-                if (!response.ok) {
-                    throw new Error(`HTTP error! Status: ${response.status}`);
-                }
                 displayBooks(books); // Вызываем функцию для отображения книг
             } catch (error) {
                 console.error('Error:', error);
@@ -27,9 +24,6 @@
                 const path = `/books/${id}`; // Путь
                 const response = await fetch(path); // Поиск книги по ID
                 const book = await response.json(); // Преобразование ответа в JSON
-                if (!response.ok) {
-                    throw new Error(`HTTP error! Status: ${response.status}`);
-                }
                 displayFoundBook(book); // Вызываем функцию для отображения найденной книги
             } catch (error) {
                 console.error('Error:', error);
@@ -74,17 +68,18 @@
                 const path = `/books/${id}`; // Формируем путь для удаления книги
                 const response = await fetch(path, { method: 'DELETE' }); // Отправляем DELETE-запрос
                 const books = await response.json(); // Преобразование ответа в JSON
-                if (!response.ok) {
-                    throw new Error(`HTTP error! Status: ${response.status}`);
-                }
                 displayBooks(books); // Вызываем функцию для отображения книг
             } catch (error) {
                 console.error('Ошибка:', error);
             }
         }
 
-        async function createBook(title, authorId, genreId) {
+        async function createBook() {
             try {
+                const title = document.getElementById('title-input').value;
+                const authorId = document.getElementById('author-id-input').value;
+                const genreId = document.getElementById('genre-id-input').value;
+
                 const body = JSON.stringify({ title, authorId, genreId }); // Создаем тело запроса
                 const options = {
                     method: 'POST', // Метод POST для создания новой книги
@@ -94,11 +89,51 @@
                     body
                 };
                 const response = await fetch('/books', options); // Отправляем POST-запрос на создание книги
-                const createdBook = await response.json(); // Преобразование ответа в JSON
-                if (!response.ok) {
-                    throw new Error(`HTTP error! Status: ${response.status}`);
-                }
-                return createdBook; // Возвращаем созданную книгу
+                const books = await response.json(); // Преобразование ответа в JSON
+                displayBooks(books);
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        async function createBook() {
+            try {
+                const title = document.getElementById('title-input').value;
+                const authorId = document.getElementById('author-id-input').value;
+                const genreId = document.getElementById('genre-id-input').value;
+                const body = JSON.stringify({ title, authorId, genreId }); // Создаем тело запроса
+                const options = {
+                    method: 'POST', // Метод POST для создания новой книги
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body
+                };
+                const response = await fetch('/books', options); // Отправляем POST-запрос на создание книги
+                const books = await response.json(); // Преобразование ответа в JSON
+                displayBooks(books);
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        async function updateBook() {
+            try {
+                const id = document.getElementById('id-update-input').value;
+                const title = document.getElementById('title-update-input').value;
+                const authorId = document.getElementById('author-update-id-input').value;
+                const genreId = document.getElementById('genre-update-id-input').value;
+                const body = JSON.stringify({ id, title, authorId, genreId }); // Тело запроса
+                const options = {
+                    method: 'PUT', // Используем PUT для полного обновления
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body
+                };
+                const response = await fetch(`/books`, options); // Отправляем PUT-запрос на обновление книги
+                const books = await response.json(); // Преобразование ответа в JSON
+                displayBooks(books);
             } catch (error) {
                 console.error('Error:', error);
             }
@@ -161,65 +196,65 @@
 </table>
 
 
-<!--&lt;!&ndash; Insert new book &ndash;&gt;-->
-<!--<hr>-->
-<!--<div>-->
-<!--    <h4 class="align-middle text-center">-->
-<!--        Insert new book-->
-<!--    </h4>-->
-<!--</div>-->
-<!--<hr>-->
+<!-- Insert new book -->
+<hr>
+<div>
+    <h4 class="align-middle text-center">
+        Insert new book
+    </h4>
+</div>
+<hr>
 
-<!--</body>-->
-<!--<form th:method="POST" th:action="@{/books/create}" th:object="${book_create_obj}" class="align-middle text-center">-->
-<!--    <div>-->
-<!--        <label for="title-input">Enter the title of the new book -></label>-->
-<!--        <input id="title-input" type="text" th:field="*{title}">-->
-<!--    </div>-->
-<!--    <div>-->
-<!--        <label for="author-id-input">Enter the Id of the author of the new book -></label>-->
-<!--        <input id="author-id-input" type="text" th:field="*{authorId}">-->
-<!--    </div>-->
-<!--    <div>-->
-<!--        <label for="genre-id-input">Enter the genre Id of the new book -></label>-->
-<!--        <input id="genre-id-input" type="text" th:field="*{genreId}">-->
-<!--    </div>-->
-<!--    <div>-->
-<!--        <button type="submit" class="btn btn-success rounded-pill px-3">Add new book</button>-->
-<!--    </div>-->
-<!--</form>-->
+</body>
+<form class="align-middle text-center">
+    <div>
+        <label for="title-input">Enter the title of the new book -></label>
+        <input id="title-input" type="text">
+    </div>
+    <div>
+        <label for="author-id-input">Enter the Id of the author of the new book -></label>
+        <input id="author-id-input" type="text">
+    </div>
+    <div>
+        <label for="genre-id-input">Enter the genre Id of the new book -></label>
+        <input id="genre-id-input" type="text">
+    </div>
+    <div>
+        <button type="button" class="btn btn-success rounded-pill px-3" onclick="createBook()">Add new book</button>
+    </div>
+</form>
 
 
-<!--&lt;!&ndash; Update book by Id &ndash;&gt;-->
-<!--<hr>-->
-<!--<div>-->
-<!--    <h4 class="align-middle text-center">-->
-<!--        Update book by Id-->
-<!--    </h4>-->
-<!--</div>-->
-<!--<hr>-->
+<!-- Update book by Id -->
+<hr>
+<div>
+    <h4 class="align-middle text-center">
+        Update book by Id
+    </h4>
+</div>
+<hr>
 
-<!--<form th:method="post" th:action="@{/books/update}" th:object="${book_update_obj}" class="align-middle text-center">-->
-<!--    <div>-->
-<!--        <label for="id-update-input">Enter the Id of the book you want to edit -></label>-->
-<!--        <input id="id-update-input" type="text" th:field="*{id}">-->
-<!--    </div>-->
-<!--    <div>-->
-<!--        <label for="title-update-input">Enter a new title for the book -></label>-->
-<!--        <input id="title-update-input" type="text" th:field="*{title}">-->
-<!--    </div>-->
-<!--    <div>-->
-<!--        <label for="author-update-id-input">Enter the new author's Id for the book -></label>-->
-<!--        <input id="author-update-id-input" type="text" th:field="*{authorId}">-->
-<!--    </div>-->
-<!--    <div>-->
-<!--        <label for="genre-update-id-input">Enter the new genre's Id for the book -></label>-->
-<!--        <input id="genre-update-id-input" type="text" th:field="*{genreId}">-->
-<!--    </div>-->
-<!--    <div>-->
-<!--        <button type="submit" class="btn btn-warning rounded-pill px-3">Update book</button>-->
-<!--    </div>-->
-<!--</form>-->
+<form class="align-middle text-center">
+    <div>
+        <label for="id-update-input">Enter the Id of the book you want to edit -></label>
+        <input id="id-update-input" type="text">
+    </div>
+    <div>
+        <label for="title-update-input">Enter a new title for the book -></label>
+        <input id="title-update-input" type="text">
+    </div>
+    <div>
+        <label for="author-update-id-input">Enter the new author's Id for the book -></label>
+        <input id="author-update-id-input" type="text">
+    </div>
+    <div>
+        <label for="genre-update-id-input">Enter the new genre's Id for the book -></label>
+        <input id="genre-update-id-input" type="text">
+    </div>
+    <div>
+        <button type="button" class="btn btn-warning rounded-pill px-3" onclick="updateBook()">Update book</button>
+    </div>
+</form>
 
 
 <!-- Find book by Id -->

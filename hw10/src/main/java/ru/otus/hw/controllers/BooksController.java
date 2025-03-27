@@ -1,15 +1,8 @@
 package ru.otus.hw.controllers;
 
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import ru.otus.hw.dto.models.book.BookCreateDto;
-import ru.otus.hw.dto.models.book.BookUpdateDto;
-import ru.otus.hw.services.BookService;
 
 /**
  * <a href="http://localhost:8080/books">...</a>
@@ -18,30 +11,9 @@ import ru.otus.hw.services.BookService;
 @RequiredArgsConstructor
 public class BooksController {
 
-    private final BookService bookService;
-
     @GetMapping(path = "/books")
-    public String index(Model model) {
-        addObjectsOnView(model);
+    public String index() {
         return "books";
-    }
-
-    @PostMapping(path = "/books/create")
-    public String createBook(@Valid @ModelAttribute(value = "book_create_obj") BookCreateDto createDto) {
-        bookService.create(createDto);
-        return "redirect:/books";
-    }
-
-    @PostMapping(path = "/books/update")
-    public String updateBook(@Valid @ModelAttribute(value = "book_update_obj") BookUpdateDto updateDto) {
-        bookService.update(updateDto);
-        return "redirect:/books";
-    }
-
-    private void addObjectsOnView(Model model) {
-//        model.addAttribute("book_id", long.class);
-        model.addAttribute("book_create_obj", new BookCreateDto());
-        model.addAttribute("book_update_obj", new BookUpdateDto());
     }
 
 }
