@@ -46,15 +46,13 @@ public class BooksRestController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public List<BookDto> createBook(@Valid @RequestBody BookCreateDto createDto) {
-        bookService.create(createDto);
-        return bookService.findAll();
+    public BookDto createBook(@Valid @RequestBody BookCreateDto createDto) {
+        return bookService.create(createDto);
     }
 
     @PutMapping
-    public List<BookDto> updateBook(@Valid @RequestBody BookUpdateDto updateDto) {
-        bookService.update(updateDto);
-        return bookService.findAll();
+    public BookDto updateBook(@Valid @RequestBody BookUpdateDto updateDto) {
+        return bookService.update(updateDto);
     }
 
 }
