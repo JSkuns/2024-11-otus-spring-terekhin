@@ -92,10 +92,13 @@
                     body
                 };
                 const response = await fetch('/books', options); // Отправляем POST-запрос на создание книги
-                const books = await response.json(); // Преобразование ответа в JSON
-                displayBooks(books);
+                const book = await response.json(); // Преобразование ответа в JSON
+                const tableBody = document.querySelector('#books-table tbody');
+                tableBody.innerHTML = '';
+                displaySingleBook(book);
             } catch (error) {
                 console.error('Error:', error);
+                window.location.href = "/error";
                 window.location.href = "/error";
             }
         }
@@ -115,8 +118,10 @@
                     body
                 };
                 const response = await fetch(`/books`, options); // Отправляем PUT-запрос на обновление книги
-                const books = await response.json(); // Преобразование ответа в JSON
-                displayBooks(books);
+                const book = await response.json(); // Преобразование ответа в JSON
+                const tableBody = document.querySelector('#books-table tbody');
+                tableBody.innerHTML = '';
+                displaySingleBook(book);
             } catch (error) {
                 console.error('Error:', error);
                 window.location.href = "/error";
