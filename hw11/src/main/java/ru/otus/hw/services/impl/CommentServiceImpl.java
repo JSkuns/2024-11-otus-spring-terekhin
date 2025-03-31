@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 import ru.otus.hw.dto.mappers.impl.CommentDtoMapper;
 import ru.otus.hw.dto.models.comment.CommentCreateDto;
 import ru.otus.hw.dto.models.comment.CommentDto;
@@ -29,55 +31,49 @@ public class CommentServiceImpl implements CommentService {
     private final CommentDtoMapper commentDtoMapper;
 
     @Override
-    @Transactional(readOnly = true)
-    public List<CommentDto> findAllCommentsByBookId(long id) {
-        var commentList = commentRepository.findByBookId(id);
-        return commentDtoMapper.toDto(commentList);
+    public Flux<CommentDto> findAllCommentsByBookId(String id) {
+        return commentRepository.findByBookId(id).map(commentDtoMapper::toDto);
     }
 
     @Override
-    @Transactional(readOnly = true)
-    public CommentDto findById(long id) {
-        var comment = commentRepository.findById(id).orElse(null);
-        return commentDtoMapper.toDto(Objects.requireNonNull(comment));
+    public Mono<CommentDto> findById(String id) {
+        return commentRepository.findById(id).map(commentDtoMapper::toDto);
     }
 
     @Override
-    @Transactional
-    public CommentDto create(CommentCreateDto commentCreateDto) {
+    public Mono<CommentDto> create(CommentCreateDto commentCreateDto) {
         var bookId = commentCreateDto.getBookId();
-        var book = bookRepository.findById(bookId)
-                .orElseThrow(() -> {
-                    var errMsg = "Book with id %d not found".formatted(bookId);
-                    log.error(errMsg);
-                    return new NotFoundException(errMsg);
-                });
-        var comment = commentRepository.save(new Comment(0, commentCreateDto.getText(), book));
-        return commentDtoMapper.toDto(comment);
+
+        // Получаем книгу реактивно
+        return bookRepository.findById(bookId)
+                .switchIfEmpty(Mono.error(new NotFoundException("Книга с id %d не найдена".formatted(bookId))))
+                .flatMap(book -> {
+                    // Создаем новый комментарий
+                    var comment = new Comment("0", commentCreateDto.getText(), book);
+                    // Сохраняем комментарий реактивно
+                    return commentRepository.save(comment);
+                })
+                .map(commentDtoMapper::toDto); // Преобразуем результат в DTO
     }
 
     @Override
-    @Transactional
-    public CommentDto update(CommentUpdateDto commentUpdateDto) {
-        var id = commentUpdateDto.getId();
-        var comment = commentRepository.findById(id)
-                .orElseThrow(() -> {
-                    var errMsg = "Comment with id %d not found".formatted(id);
-                    log.error(errMsg);
-                    return new NotFoundException(errMsg);
-                });
-        comment.setText(commentUpdateDto.getText());
-        var savedComment = commentRepository.save(comment);
-        commentRepository.flush();
-        log.info("The comment with id %d has been changed".formatted(id));
-        return commentDtoMapper.toDto(savedComment);
+    public Mono<CommentDto> update(CommentUpdateDto commentUpdateDto) {
+        String id = commentUpdateDto.getId();
+        return commentRepository.findById(id)
+                .switchIfEmpty(Mono.error(new NotFoundException("Comment with id %d not found".formatted(id))))
+                .doOnNext(comment -> {
+                    comment.setText(commentUpdateDto.getText());
+                    log.info("The comment with id {} has been updated", id);
+                })
+                .flatMap(commentRepository::save)
+                .map(commentDtoMapper::toDto);
     }
 
     @Override
-    @Transactional
-    public void deleteById(long id) {
-        commentRepository.deleteById(id);
+    public Mono<Void> deleteById(String id) {
+        var retVal = commentRepository.deleteById(id);
         log.info("Comment with id %d was deleted".formatted(id));
+        return retVal;
     }
 
 }

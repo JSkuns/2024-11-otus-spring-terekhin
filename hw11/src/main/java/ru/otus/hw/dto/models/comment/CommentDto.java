@@ -10,7 +10,7 @@ import ru.otus.hw.dto.models.book.BookDto;
 @AllArgsConstructor
 public class CommentDto {
 
-    private long id;
+    private String id;
 
     private BookDto book;
 

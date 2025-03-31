@@ -14,7 +14,7 @@ import lombok.Setter;
 public class CommentCreateDto {
 
     @NotNull
-    private Long bookId;
+    private String bookId;
 
     @Size(min = 2, max = 50)
     private String text;

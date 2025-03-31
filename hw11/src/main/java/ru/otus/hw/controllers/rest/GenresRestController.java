@@ -5,10 +5,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import reactor.core.publisher.Flux;
 import ru.otus.hw.dto.models.genre.GenreDto;
 import ru.otus.hw.services.GenreService;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/genres")
@@ -19,7 +18,7 @@ public class GenresRestController {
 
     @GetMapping(path = "/")
     @ResponseBody
-    public List<GenreDto> getAllGenres() {
+    public Flux<GenreDto> getAllGenres() {
         return genreService.findAll();
     }
 

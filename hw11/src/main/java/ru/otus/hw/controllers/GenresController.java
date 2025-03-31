@@ -3,6 +3,7 @@ package ru.otus.hw.controllers;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import reactor.core.publisher.Mono;
 
 /**
  * <a href="http://localhost:8080/genres">...</a>
@@ -12,8 +13,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class GenresController {
 
     @GetMapping(path = "/genres")
-    public String index() {
-        return "genres";
+    public Mono<String> index() {
+        return Mono.just("genres");
     }
 
 }

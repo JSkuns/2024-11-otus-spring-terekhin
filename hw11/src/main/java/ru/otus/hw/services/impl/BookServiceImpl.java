@@ -3,7 +3,9 @@ package ru.otus.hw.services.impl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+import reactor.util.function.Tuples;
 import ru.otus.hw.dto.mappers.impl.BookDtoMapper;
 import ru.otus.hw.dto.models.book.BookCreateDto;
 import ru.otus.hw.dto.models.book.BookDto;
@@ -16,9 +18,6 @@ import ru.otus.hw.repositories.AuthorRepository;
 import ru.otus.hw.repositories.BookRepository;
 import ru.otus.hw.repositories.GenreRepository;
 import ru.otus.hw.services.BookService;
-
-import java.util.List;
-import java.util.Objects;
 
 @Slf4j
 @Service
@@ -34,72 +33,80 @@ public class BookServiceImpl implements BookService {
     private final BookDtoMapper bookDtoMapper;
 
     @Override
-    @Transactional(readOnly = true)
-    public BookDto findById(long id) {
-        var book = bookRepository.findById(id).orElse(null);
-        return bookDtoMapper.toDto(Objects.requireNonNull(book));
+    public Mono<BookDto> findById(String id) {
+        return bookRepository.findById(id).map(bookDtoMapper::toDto);
     }
 
     @Override
-    @Transactional(readOnly = true)
-    public List<BookDto> findAll() {
-        List<Book> books = bookRepository.findAll();
-        return bookDtoMapper.toDto(books);
+    public Flux<BookDto> findAll() {
+        return bookRepository.findAll().map(bookDtoMapper::toDto);
     }
 
     @Override
-    @Transactional
-    public BookDto create(BookCreateDto createDto) {
-        var author = findAuthorById(createDto.getAuthorId());
-        var genre = findGenreById(createDto.getGenreId());
-        var book = new Book(0, createDto.getTitle(), author, genre);
-        var retVal = bookRepository.save(book);
-        return bookDtoMapper.toDto(retVal);
+    public Mono<BookDto> create(BookCreateDto createDto) {
+        return Mono.zip(
+                        findAuthorById(createDto.getAuthorId()),
+                        findGenreById(createDto.getGenreId()))
+                .map(tuple -> {
+                    var author = tuple.getT1(); // Автор
+                    var genre = tuple.getT2();  // Жанр
+                    return new Book("0", createDto.getTitle(), author, genre);
+                })
+                .flatMap(bookRepository::save) // Сохранение книги
+                .map(bookDtoMapper::toDto);     // Преобразование в DTO
     }
 
     @Override
-    @Transactional
-    public BookDto update(BookUpdateDto updateDto) {
-        var book = bookRepository.findById(updateDto.getId())
-                .orElseThrow(() -> {
-                    var errMsg = "Book with id %s not found".formatted(updateDto.getId());
-                    log.error(errMsg);
-                    return new NotFoundException(errMsg);
-                });
-        var author = findAuthorById(updateDto.getAuthorId());
-        var genre = findGenreById(updateDto.getGenreId());
+    public Mono<BookDto> update(BookUpdateDto updateDto) {
+        // Получаем книгу через reactive repository
+        return bookRepository.findById(updateDto.getId())
+                // switchIfEmpty - Для обработки отсутствия объектов используется метод switchIfEmpty, который генерирует ошибку типа NotFoundException в случае отсутствия нужного элемента.
+                .switchIfEmpty(Mono.error(new NotFoundException("Book with id %s not found".formatted(updateDto.getId()))))
+                // flatMap - Используется для выполнения операций над каждым элементом потока и преобразования результатов в новый поток.
+                .flatMap(book -> {
+                    // Получаем автора через reactive repository
+                    return authorRepository.findById(updateDto.getAuthorId())
+                            .switchIfEmpty(Mono.error(new NotFoundException("Author with id %s not found".formatted(updateDto.getAuthorId()))))
+                            // Метод zipWith позволяет объединить результаты двух потоков данных — поиска автора и жанра. Это удобно, когда нужно получить несколько зависимых сущностей одновременно.
+                            .zipWith(
+                                    // Получаем жанр через reactive repository
+                                    genreRepository.findById(updateDto.getGenreId())
+                                            .switchIfEmpty(Mono.error(new NotFoundException("Genre with id %s not found".formatted(updateDto.getGenreId())))),
+                                    (author, genre) -> Tuples.of(book, author, genre)
+                            );
+                })
+                .map(tuple -> {
+                    Book book = tuple.getT1();
+                    Author author = tuple.getT2();
+                    Genre genre = tuple.getT3();
 
-        book.setTitle(updateDto.getTitle());
-        book.setAuthor(author);
-        book.setGenre(genre);
+                    // Обновляем данные книги
+                    book.setTitle(updateDto.getTitle());
+                    book.setAuthor(author);
+                    book.setGenre(genre);
 
-        var retVal = bookRepository.save(book);
-        return bookDtoMapper.toDto(retVal);
+                    return book;
+                })
+                // save - Реактивная версия сохранения книги возвращается в виде Mono<Book>. Затем этот результат преобразуется в BookDto с помощью маппера.
+                .flatMap(bookRepository::save) // Сохраняем книгу реактивно
+                .map(bookDtoMapper::toDto); // Преобразуем результат в DTO
     }
 
     @Override
-    @Transactional
-    public void deleteById(long id) {
-        bookRepository.deleteById(id);
+    public Mono<Void> deleteById(String id) {
+        var retVal = bookRepository.deleteById(id);
         log.info("Book with id %d was deleted".formatted(id));
+        return retVal;
     }
 
-    private Genre findGenreById(long genreId) {
+    private Mono<Genre> findGenreById(String genreId) {
         return genreRepository.findById(genreId)
-                .orElseThrow(() -> {
-                    var errMsg = "Genre with id %s not found".formatted(genreId);
-                    log.error(errMsg);
-                    return new NotFoundException(errMsg);
-                });
+                .switchIfEmpty(Mono.error(new NotFoundException("Genre with id %s not found".formatted(genreId))));
     }
 
-    private Author findAuthorById(long authorId) {
+    private Mono<Author> findAuthorById(String authorId) {
         return authorRepository.findById(authorId)
-                .orElseThrow(() -> {
-                    var errMsg = "Author with id %s not found".formatted(authorId);
-                    log.error(errMsg);
-                    return new NotFoundException(errMsg);
-                });
+                .switchIfEmpty(Mono.error(new NotFoundException("Author with id %s not found".formatted(authorId))));
     }
 
 }

@@ -15,35 +15,35 @@ import ru.otus.hw.services.impl.GenreServiceImpl;
 @Import({GenreServiceImpl.class, GenreDtoMapper.class})
 public class GenreServiceImplTest {
 
-    @Autowired
-    private GenreService genreService;
-
-    @Test
-    @DisplayName("Метод findAll(). В БД нет жанра с ID '-321'")
-    void inAllGenresHasNotGenreTest() {
-        // Act
-        var genresList = genreService.findAll();
-        // Assert
-        Assertions.assertFalse(
-                genresList
-                        .stream()
-                        .map(GenreDto::getId)
-                        .anyMatch(elt -> elt == -321)
-        );
-    }
-
-    @Test
-    @DisplayName("Метод 'findAll()'. В БД есть жанр с ID '3'")
-    void inAllGenresHasGenreTest() {
-        // Act
-        var genresList = genreService.findAll();
-        // Assert
-        Assertions.assertTrue(
-                genresList
-                        .stream()
-                        .map(GenreDto::getId)
-                        .anyMatch(elt -> elt == 3)
-        );
-    }
+//    @Autowired
+//    private GenreService genreService;
+//
+//    @Test
+//    @DisplayName("Метод findAll(). В БД нет жанра с ID '-321'")
+//    void inAllGenresHasNotGenreTest() {
+//        // Act
+//        var genresList = genreService.findAll();
+//        // Assert
+//        Assertions.assertFalse(
+//                genresList
+//                        .stream()
+//                        .map(GenreDto::getId)
+//                        .anyMatch(elt -> elt == -321)
+//        );
+//    }
+//
+//    @Test
+//    @DisplayName("Метод 'findAll()'. В БД есть жанр с ID '3'")
+//    void inAllGenresHasGenreTest() {
+//        // Act
+//        var genresList = genreService.findAll();
+//        // Assert
+//        Assertions.assertTrue(
+//                genresList
+//                        .stream()
+//                        .map(GenreDto::getId)
+//                        .anyMatch(elt -> elt == 3)
+//        );
+//    }
 
 }

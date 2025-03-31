@@ -1,10 +1,6 @@
 package ru.otus.hw.dto.models.book;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.Builder;
+import lombok.*;
 import ru.otus.hw.dto.models.author.AuthorDto;
 import ru.otus.hw.dto.models.genre.GenreDto;
 
@@ -15,7 +11,7 @@ import ru.otus.hw.dto.models.genre.GenreDto;
 @AllArgsConstructor
 public class BookDto {
 
-    private long id;
+    private String id;
 
     private String title;
 

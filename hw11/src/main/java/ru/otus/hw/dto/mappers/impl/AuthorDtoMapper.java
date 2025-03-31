@@ -1,6 +1,7 @@
 package ru.otus.hw.dto.mappers.impl;
 
 import org.springframework.stereotype.Component;
+import reactor.core.publisher.Flux;
 import ru.otus.hw.dto.mappers.DtoMapper;
 import ru.otus.hw.dto.models.author.AuthorDto;
 import ru.otus.hw.models.Author;

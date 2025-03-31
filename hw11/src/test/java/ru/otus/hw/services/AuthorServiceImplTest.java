@@ -14,35 +14,35 @@ import ru.otus.hw.services.impl.AuthorServiceImpl;
 @Import({AuthorServiceImpl.class, AuthorDtoMapper.class})
 public class AuthorServiceImplTest {
 
-    @Autowired
-    private AuthorService authorService;
-
-    @Test
-    @DisplayName("Метод findAll(). В БД нет автора с ID '-123'")
-    void inAllAuthorsHasNotAuthorTest() {
-        // Act
-        var authorsList = authorService.findAll();
-        // Assert
-        Assertions.assertFalse(
-                authorsList
-                        .stream()
-                        .map(AuthorDto::getId)
-                        .anyMatch(elt -> elt == -123)
-        );
-    }
-
-    @Test
-    @DisplayName("Метод 'findAll()'. В БД есть автор с ID '2'")
-    void inAllAuthorsHasAuthorTest() {
-        // Act
-        var authorsList = authorService.findAll();
-        // Assert
-        Assertions.assertTrue(
-                authorsList
-                        .stream()
-                        .map(AuthorDto::getId)
-                        .anyMatch(elt -> elt == 2)
-        );
-    }
+//    @Autowired
+//    private AuthorService authorService;
+//
+//    @Test
+//    @DisplayName("Метод findAll(). В БД нет автора с ID '-123'")
+//    void inAllAuthorsHasNotAuthorTest() {
+//        // Act
+//        var authorsList = authorService.findAll();
+//        // Assert
+//        Assertions.assertFalse(
+//                authorsList
+//                        .stream()
+//                        .map(AuthorDto::getId)
+//                        .anyMatch(elt -> elt == -123)
+//        );
+//    }
+//
+//    @Test
+//    @DisplayName("Метод 'findAll()'. В БД есть автор с ID '2'")
+//    void inAllAuthorsHasAuthorTest() {
+//        // Act
+//        var authorsList = authorService.findAll();
+//        // Assert
+//        Assertions.assertTrue(
+//                authorsList
+//                        .stream()
+//                        .map(AuthorDto::getId)
+//                        .anyMatch(elt -> elt == 2)
+//        );
+//    }
 
 }

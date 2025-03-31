@@ -14,15 +14,15 @@ import lombok.Setter;
 public class BookUpdateDto {
 
     @NotNull
-    private Long id;
+    private String id;
 
     @Size(min = 2, max = 50)
     private String title;
 
     @NotNull
-    private Long authorId;
+    private String authorId;
 
     @NotNull
-    private Long genreId;
+    private String genreId;
 
 }

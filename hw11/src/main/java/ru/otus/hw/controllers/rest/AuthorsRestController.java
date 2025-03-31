@@ -5,10 +5,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import reactor.core.publisher.Flux;
 import ru.otus.hw.dto.models.author.AuthorDto;
 import ru.otus.hw.services.AuthorService;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/authors")
@@ -19,7 +18,7 @@ public class AuthorsRestController {
 
     @GetMapping(path = "/")
     @ResponseBody
-    public List<AuthorDto> getAllAuthors() {
+    public Flux<AuthorDto> getAllAuthors() {
         return authorService.findAll();
     }
 

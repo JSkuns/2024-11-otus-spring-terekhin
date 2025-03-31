@@ -13,7 +13,7 @@ import lombok.Builder;
 @NoArgsConstructor
 public class AuthorDto {
 
-    private long id;
+    private String id;
 
     private String fullName;
 
