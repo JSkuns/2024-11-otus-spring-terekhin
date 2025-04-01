@@ -48,12 +48,12 @@ public class BookServiceImpl implements BookService {
                         findAuthorById(createDto.getAuthorId()),
                         findGenreById(createDto.getGenreId()))
                 .map(tuple -> {
-                    var author = tuple.getT1(); // Автор
-                    var genre = tuple.getT2();  // Жанр
-                    return new Book("0", createDto.getTitle(), author, genre);
+                    var author = tuple.getT1();
+                    var genre = tuple.getT2();
+                    return new Book(null, createDto.getTitle(), author, genre);
                 })
                 .flatMap(bookRepository::save) // Сохранение книги
-                .map(bookDtoMapper::toDto);     // Преобразование в DTO
+                .map(bookDtoMapper::toDto); // Преобразование в DTO
     }
 
     @Override
@@ -95,7 +95,7 @@ public class BookServiceImpl implements BookService {
     @Override
     public Mono<Void> deleteById(String id) {
         var retVal = bookRepository.deleteById(id);
-        log.info("Book with id %d was deleted".formatted(id));
+        log.info("Book with id %s was deleted".formatted(id));
         return retVal;
     }
 

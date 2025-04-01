@@ -3,7 +3,6 @@ package ru.otus.hw.services.impl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import ru.otus.hw.dto.mappers.impl.CommentDtoMapper;
@@ -15,9 +14,6 @@ import ru.otus.hw.models.Comment;
 import ru.otus.hw.repositories.BookRepository;
 import ru.otus.hw.repositories.CommentRepository;
 import ru.otus.hw.services.CommentService;
-
-import java.util.List;
-import java.util.Objects;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -46,11 +42,9 @@ public class CommentServiceImpl implements CommentService {
 
         // Получаем книгу реактивно
         return bookRepository.findById(bookId)
-                .switchIfEmpty(Mono.error(new NotFoundException("Книга с id %d не найдена".formatted(bookId))))
+                .switchIfEmpty(Mono.error(new NotFoundException("Книга с id %s не найдена".formatted(bookId))))
                 .flatMap(book -> {
-                    // Создаем новый комментарий
-                    var comment = new Comment("0", commentCreateDto.getText(), book);
-                    // Сохраняем комментарий реактивно
+                    var comment = new Comment(null, commentCreateDto.getText(), book);
                     return commentRepository.save(comment);
                 })
                 .map(commentDtoMapper::toDto); // Преобразуем результат в DTO
@@ -60,7 +54,7 @@ public class CommentServiceImpl implements CommentService {
     public Mono<CommentDto> update(CommentUpdateDto commentUpdateDto) {
         String id = commentUpdateDto.getId();
         return commentRepository.findById(id)
-                .switchIfEmpty(Mono.error(new NotFoundException("Comment with id %d not found".formatted(id))))
+                .switchIfEmpty(Mono.error(new NotFoundException("Comment with id %s not found".formatted(id))))
                 .doOnNext(comment -> {
                     comment.setText(commentUpdateDto.getText());
                     log.info("The comment with id {} has been updated", id);
@@ -72,7 +66,7 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public Mono<Void> deleteById(String id) {
         var retVal = commentRepository.deleteById(id);
-        log.info("Comment with id %d was deleted".formatted(id));
+        log.info("Comment with id %s was deleted".formatted(id));
         return retVal;
     }
 
