@@ -3,7 +3,16 @@ package ru.otus.hw.controllers.rest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import ru.otus.hw.dto.models.book.BookCreateDto;
@@ -30,9 +39,8 @@ public class BooksRestController {
     }
 
     @DeleteMapping(path = "/{book_id}")
-    public Flux<BookDto> deleteBook(@PathVariable(value = "book_id") String bookId) {
-        bookService.deleteById(bookId);
-        return bookService.findAll();
+    public Mono<Void> deleteBook(@PathVariable(value = "book_id") String bookId) {
+        return bookService.deleteById(bookId);
     }
 
     @PostMapping

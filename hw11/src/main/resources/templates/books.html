@@ -68,9 +68,9 @@
             try {
                 const id = document.getElementById('id-delete-input').value; // Получаем значение id из input
                 const path = `/books/${id}`; // Формируем путь для удаления книги
-                const response = await fetch(path, { method: 'DELETE' }); // Отправляем DELETE-запрос
-                const books = await response.json(); // Преобразование ответа в JSON
-                displayBooks(books); // Вызываем функцию для отображения книг
+                await fetch(path, { method: 'DELETE' }); // Отправляем DELETE-запрос
+                const foundTableBody = document.querySelector('#books-table tbody');
+                foundTableBody.innerHTML = '';
             } catch (error) {
                 console.error('Ошибка:', error);
                 window.location.href = "/error";

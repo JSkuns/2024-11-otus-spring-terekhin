@@ -24,7 +24,8 @@ public class BookEventListener extends AbstractMongoEventListener<Book> {
         Mono.justOrEmpty(event.getDocument().get("_id"))
                 .cast(String.class)
                 .flatMap(id -> commentRepository.deleteById(id)
-                        .then(Mono.fromRunnable(() -> log.info(format("Comments for the book with id %s have been deleted", id))))
+                        .then(Mono.fromRunnable(() ->
+                                log.info(format("Comments for the book with id %s have been deleted", id))))
                         .onErrorResume(error -> {
                             var errMsg = format("The comments for the book with id %s could not be deleted", id);
                             log.error(errMsg, error);

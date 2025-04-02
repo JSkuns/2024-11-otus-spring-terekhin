@@ -58,36 +58,26 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public Mono<BookDto> update(BookUpdateDto updateDto) {
-        // Получаем книгу через reactive repository
         return bookRepository.findById(updateDto.getId())
-                // switchIfEmpty - Для обработки отсутствия объектов используется метод switchIfEmpty, который генерирует ошибку типа NotFoundException в случае отсутствия нужного элемента.
-                .switchIfEmpty(Mono.error(new NotFoundException("Book with id %s not found".formatted(updateDto.getId()))))
-                // flatMap - Используется для выполнения операций над каждым элементом потока и преобразования результатов в новый поток.
-                .flatMap(book -> {
-                    // Получаем автора через reactive repository
-                    return authorRepository.findById(updateDto.getAuthorId())
-                            .switchIfEmpty(Mono.error(new NotFoundException("Author with id %s not found".formatted(updateDto.getAuthorId()))))
-                            // Метод zipWith позволяет объединить результаты двух потоков данных — поиска автора и жанра. Это удобно, когда нужно получить несколько зависимых сущностей одновременно.
-                            .zipWith(
-                                    // Получаем жанр через reactive repository
-                                    genreRepository.findById(updateDto.getGenreId())
-                                            .switchIfEmpty(Mono.error(new NotFoundException("Genre with id %s not found".formatted(updateDto.getGenreId())))),
+                .switchIfEmpty(Mono.error(
+                        new NotFoundException("Book with id %s not found".formatted(updateDto.getId()))))
+                .flatMap(book -> authorRepository.findById(updateDto.getAuthorId())
+                            .switchIfEmpty(Mono.error(new NotFoundException("Author with id %s not found"
+                                    .formatted(updateDto.getAuthorId()))))
+                            .zipWith(genreRepository.findById(updateDto.getGenreId())
+                                            .switchIfEmpty(Mono.error(new NotFoundException("Genre with id %s not found"
+                                                    .formatted(updateDto.getGenreId())))),
                                     (author, genre) -> Tuples.of(book, author, genre)
-                            );
-                })
+                            ))
                 .map(tuple -> {
                     Book book = tuple.getT1();
                     Author author = tuple.getT2();
                     Genre genre = tuple.getT3();
-
-                    // Обновляем данные книги
                     book.setTitle(updateDto.getTitle());
                     book.setAuthor(author);
                     book.setGenre(genre);
-
                     return book;
                 })
-                // save - Реактивная версия сохранения книги возвращается в виде Mono<Book>. Затем этот результат преобразуется в BookDto с помощью маппера.
                 .flatMap(bookRepository::save) // Сохраняем книгу реактивно
                 .map(bookDtoMapper::toDto); // Преобразуем результат в DTO
     }

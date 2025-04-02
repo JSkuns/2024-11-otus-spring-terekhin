@@ -76,7 +76,7 @@ class BooksRestControllerTest {
 
     @Test
     void testCreateBook() {
-        BookCreateDto createDto = new BookCreateDto("newTitle", null, null);
+        BookCreateDto createDto = new BookCreateDto("newTitle", "1", "2");
         webTestClient.post().uri("/books")
                 .bodyValue(createDto)
                 .exchange()
@@ -86,7 +86,7 @@ class BooksRestControllerTest {
 
     @Test
     void testUpdateBook() {
-        BookUpdateDto updateDto = new BookUpdateDto(bookDto1.getId(), "updatedTitle", null, null);
+        BookUpdateDto updateDto = new BookUpdateDto(bookDto1.getId(), "updatedTitle", "1", "2");
         webTestClient.put().uri("/books")
                 .bodyValue(updateDto)
                 .exchange()
