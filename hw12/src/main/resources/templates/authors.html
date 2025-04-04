@@ -6,40 +6,6 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <title>Library | Authors</title>
     <link href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
-
-    <script>
-        async function getAuthors() {
-            try {
-                const response = await fetch('/authors/');
-                const authors = await response.json();
-                displayAuthors(authors);
-            } catch (error) {
-                console.error('Error:', error);
-                window.location.href = "/error";
-            }
-        }
-
-        function displayAuthors(authors) {
-            const tableBody = document.querySelector('#authors-table tbody');
-            tableBody.innerHTML = '';
-            authors.forEach(author => {
-                displaySingleAuthor(author);
-            });
-        }
-
-        function displaySingleAuthor(author) {
-            const tableBody = document.querySelector('#authors-table tbody');
-            const row = document.createElement('tr');
-            const cell1 = document.createElement('td');
-            const cell2 = document.createElement('td');
-            cell1.textContent = author.id;
-            cell2.textContent = author.fullName;
-            row.appendChild(cell1);
-            row.appendChild(cell2);
-            tableBody.appendChild(row);
-        }
-    </script>
-
 </head>
 
 
@@ -55,7 +21,7 @@
 </style>
 
 
-<body class="container" onload="getAuthors()">
+<body class="container">
 
 
 <ol class="breadcrumb p-3 bg-body-tertiary rounded-3">
@@ -76,14 +42,19 @@
 </div>
 <hr>
 
-<table class="table table-striped table-bordered" id="authors-table">
+<table class="table table-striped table-bordered">
     <thead class="align-middle text-center">
     <tr>
         <th>Author.Id</th>
         <th>Author.FullName</th>
     </tr>
     </thead>
-    <tbody></tbody>
+    <tbody>
+    <tr th:each="author : ${authors}">
+        <td th:text="${author.id}">1</td>
+        <td th:text="${author.fullName}">Test author full name</td>
+    </tr>
+    </tbody>
 </table>
 
 </body>

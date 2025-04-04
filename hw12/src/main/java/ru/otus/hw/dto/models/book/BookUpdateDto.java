@@ -1,6 +1,6 @@
 package ru.otus.hw.dto.models.book;
 
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -13,16 +13,16 @@ import lombok.Setter;
 @AllArgsConstructor
 public class BookUpdateDto {
 
-    @NotNull
-    private Long id;
+    @Digits(integer = 3, fraction = 0)
+    private long id;
 
     @Size(min = 2, max = 50)
     private String title;
 
-    @NotNull
-    private Long authorId;
+    @Digits(integer = 3, fraction = 0)
+    private long authorId;
 
-    @NotNull
-    private Long genreId;
+    @Digits(integer = 3, fraction = 0)
+    private long genreId;
 
 }
