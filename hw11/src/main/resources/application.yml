@@ -1,0 +1,18 @@
+spring:
+  data:
+    mongodb:
+      database: library
+      host: localhost
+      # 27017
+      # 0 - when flapdoodle using?
+      port: 27017
+
+logging:
+  level:
+    ROOT: INFO
+
+mongock:
+  # runner-type: "ApplicationRunner" - default
+  runner-type: "InitializingBean"
+  change-logs-scan-package:
+    - ru.otus.hw.mongock
