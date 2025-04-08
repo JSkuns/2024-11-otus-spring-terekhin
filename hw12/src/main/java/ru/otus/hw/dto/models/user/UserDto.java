@@ -9,6 +9,12 @@ import lombok.*;
 @AllArgsConstructor
 public class UserDto {
 
-    UserAccountDetails toUserAccount(UserAccount user);
+    private long id;
+
+    private String username;
+
+    private String password;
+
+//    UserAccountDetails toUserAccount(UserAccount user);
 
 }

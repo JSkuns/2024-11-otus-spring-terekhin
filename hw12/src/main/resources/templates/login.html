@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Форма входа</title>
+    <link rel="stylesheet" href="/static/css/style.css" th:href="@{/css/style.css}">
+</head>
+<body>
+<div>
+    <h1>Форма входа</h1>
+    <table style="background-color: coral;">
+        <tr>
+            <td style="border: none;">
+                <p style="text-align: center;">
+                    <img src="/static/images/sova.svg" th:src="@{/images/sova.svg}" width="200" alt="sova">
+                </p>
+            </td>
+            <td style="border: none;">
+                <div th:if="${param.error}">
+                    Invalid username and password.
+                </div>
+                <div th:if="${param.logout}">
+                    You have been logged out.
+                </div>
+                <form th:action="@{/login}" method="post">
+                    <div>
+                        <input type="text" name="userName" placeholder="Логин"
+                               style="font-size: 1.2em;padding: 0.3em;width: auto;margin-top: 1em;" />
+                    </div>
+                    <div>
+                        <input type="password" name="password" placeholder="Пароль"
+                               style="font-size: 1.2em;padding: 0.3em;width: auto;margin-top: 1em;" />
+                    </div>
+                    <input class="edit" type="submit" value="Войти"
+                           style="font-size: 1.2em;padding: 0.3em;width: 100%;margin-top: 1em;" />
+                </form>
+            </td>
+        </tr>
+    </table>
+    <p style="text-align: center;font-size: 1.2em;">В системе три логина: <b>user</b>, <b>admin</b>, <b>manager</b></p>
+    <p style="text-align: center;font-size: 1.2em;">Пароль везде: <b>otus</b></p>
+</div>
+</body>
+</html>
