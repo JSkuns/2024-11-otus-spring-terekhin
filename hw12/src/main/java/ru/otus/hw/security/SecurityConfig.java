@@ -26,14 +26,10 @@ public class SecurityConfig {
         http
 //                .csrf(AbstractHttpConfigurer::disable) // отключить защиту от CSRF
                 .authorizeHttpRequests(authorizeRequest -> authorizeRequest
-                                //
                                 .requestMatchers("/", "/login").permitAll()
-                                // Книги
                                 .requestMatchers("/books/delete/**").hasRole("ADMIN")
                                 .requestMatchers("/books/create/**",
                                         "/books/update/**").hasAnyRole("ADMIN", "USER")
-                                // Авторы и жанры доступны всем авторизованным
-                                // Комментарии
                                 .requestMatchers("/comments/create/**",
                                         "/comments/find_by_book_id/**",
                                         "/comments/find/**").authenticated()
@@ -47,11 +43,7 @@ public class SecurityConfig {
                         .passwordParameter("password")
                         .permitAll()
                 )
-//                .logout(logout -> logout
-//                        .logoutUrl("/logout")
-//                        .deleteCookies("JSESSIONID")
-//                        .logoutSuccessUrl("/")
-//                        .permitAll())
+// .logout(logout -> logout.logoutUrl("/logout").deleteCookies("JSESSIONID").logoutSuccessUrl("/").permitAll())
                 .exceptionHandling(configurer -> configurer.accessDeniedHandler(new CustomAccessDeniedHandler()));
         return http.build();
     }
