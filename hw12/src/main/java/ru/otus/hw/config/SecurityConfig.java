@@ -28,13 +28,13 @@ public class SecurityConfig {
 //                .csrf(AbstractHttpConfigurer::disable) // отключить защиту от CSRF
                 .authorizeHttpRequests(authorizeRequest -> authorizeRequest
                         //
-                        .requestMatchers("/").hasAnyRole("ADMIN", "USER", "GUEST")
+//                        .requestMatchers("/").hasAnyRole("ADMIN", "USER", "GUEST")
                         // Логин
                         .requestMatchers("/login").anonymous()
                         // Книги
-                        .requestMatchers("/books/delete").hasRole("ADMIN")
-                        .requestMatchers("/books/create", "/books/update").hasAnyRole("ADMIN", "USER")
-                        .requestMatchers("/books/find").hasAnyRole("ADMIN", "USER", "GUEST")
+//                        .requestMatchers("/books/delete").hasRole("ADMIN")
+//                        .requestMatchers("/books/create", "/books/update").hasAnyRole("ADMIN", "USER")
+//                        .requestMatchers("/books", "/books/*").hasAnyRole("ADMIN", "USER", "GUEST")
 //                        // Авторы
 //                        .requestMatchers("/authors/delete/*", "/author/create").hasRole("ADMIN")
 //                        .requestMatchers("/author/all").hasAnyRole("ADMIN", "GUEST", "USER")
@@ -45,7 +45,7 @@ public class SecurityConfig {
 //                        .requestMatchers("/genre/edit/*").hasAnyRole("ADMIN", "GUEST")
 //                        // Комментарии
 //                        .requestMatchers("/comment/create/*").hasAnyRole("ADMIN", "USER", "GUEST")
-//                        .requestMatchers("/comment/**").hasAnyRole("ADMIN", "GUEST")
+                        .requestMatchers("/comments/*").hasAnyRole("ADMIN", "GUEST")
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
