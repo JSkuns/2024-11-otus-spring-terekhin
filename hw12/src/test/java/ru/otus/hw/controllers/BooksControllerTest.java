@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 import ru.otus.hw.dto.models.author.AuthorDto;
@@ -20,6 +21,7 @@ import java.util.List;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -31,66 +33,72 @@ public class BooksControllerTest {
     private BookService booksService;
 
     @Autowired
-    private MockMvc mvc;
+    private MockMvc mockMvc;
 
+    @WithMockUser
     @Test
     void shouldReturnAllBooks() throws Exception {
         List<BookDto> expectedBooks = getExpectedBooks();
         given(booksService.findAll()).willReturn(expectedBooks);
-        mvc.perform(get("/books"))
+        mockMvc.perform(get("/books"))
                 .andExpect(status().isOk())
                 .andExpect(model().attribute("books", expectedBooks));
     }
 
+    @WithMockUser
     @Test
     void shouldInsertNewBook() throws Exception {
         BookCreateDto bookCreateDto = new BookCreateDto("test", 1, 2);
-        mvc.perform(post("/books/create").flashAttr("book_create_obj", bookCreateDto))
+        mockMvc.perform(post("/books/create").with(csrf()).flashAttr("book_create_obj", bookCreateDto))
                 .andExpect(status().isFound())
                 .andExpect(view().name("redirect:/books"));
         verify(booksService).create(bookCreateDto);
     }
 
+    @WithMockUser
     @Test
     void shouldThrownNullPointerException() throws Exception {
-        var result = mvc.perform(get("/books/find?book_id=%d".formatted(-2)));
+        var result = mockMvc.perform(get("/books/find?book_id=%d".formatted(-2)));
         result
                 .andExpect(status().isOk())
                 .andExpect(view().name("error"));
         Assertions.assertInstanceOf(NullPointerException.class, result.andReturn().getResolvedException());
     }
 
+    @WithMockUser
     @Test
     void shouldUpdateBook() throws Exception {
         BookUpdateDto bookUpdateDto = new BookUpdateDto(1, "test", 2, 2);
-        mvc.perform(post("/books/update").flashAttr("book_update_obj", bookUpdateDto))
+        mockMvc.perform(post("/books/update").with(csrf()).flashAttr("book_update_obj", bookUpdateDto))
                 .andExpect(status().isFound())
                 .andExpect(view().name("redirect:/books"));
         verify(booksService).update(bookUpdateDto);
     }
 
+    @WithMockUser
     @Test
     void shouldThrownInternalServerError500() throws Exception {
-        var result = mvc.perform(post("/booksss/update?err"));
+        var result = mockMvc.perform(post("/booksss/update?err").with(csrf()));
         result
                 .andExpect(status().isOk())
                 .andExpect(view().name("error"));
         Assertions.assertInstanceOf(NoResourceFoundException.class, result.andReturn().getResolvedException());
     }
 
+    @WithMockUser(roles = "ADMIN")
     @Test
     void shouldDeleteBook() throws Exception {
-        mvc.perform(post("/books/delete?book_id=%d"
-                        .formatted(1)))
+        mockMvc.perform(post("/books/delete?book_id=%d".formatted(1)).with(csrf()))
                 .andExpect(status().isFound())
                 .andExpect(view().name("redirect:/books"));
         verify(booksService).deleteById(any(Long.class));
     }
 
+    @WithMockUser
     @Test
     void shouldFoundBook() throws Exception {
         given(booksService.findById(2)).willReturn(getExpectedBooks().get(1));
-        mvc.perform(get("/books/find?book_id=%d".formatted(2)))
+        mockMvc.perform(get("/books/find?book_id=%d".formatted(2)))
                 .andExpect(status().isOk())
                 .andExpect(view().name("books"));
         verify(booksService).findById(any(Long.class));
