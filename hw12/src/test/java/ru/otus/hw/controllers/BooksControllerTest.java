@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
@@ -20,6 +21,7 @@ import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -85,13 +87,21 @@ public class BooksControllerTest {
         Assertions.assertInstanceOf(NoResourceFoundException.class, result.andReturn().getResolvedException());
     }
 
-    @WithMockUser(roles = "ADMIN")
+    @WithMockUser
     @Test
     void shouldDeleteBook() throws Exception {
         mockMvc.perform(post("/books/delete?book_id=%d".formatted(1)).with(csrf()))
                 .andExpect(status().isFound())
                 .andExpect(view().name("redirect:/books"));
         verify(booksService).deleteById(any(Long.class));
+    }
+
+    @WithAnonymousUser
+    @Test
+    void shouldThrowUnauthorizedError401() throws Exception {
+        mockMvc.perform(post("/books/delete?book_id=%d".formatted(1)).with(csrf()))
+                .andExpect(status().isUnauthorized());
+        verify(booksService, never()).deleteById(any(Long.class));
     }
 
     @WithMockUser
