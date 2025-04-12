@@ -2,6 +2,9 @@ package ru.otus.hw.services.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.otus.hw.dto.mappers.impl.BookDtoMapper;
@@ -79,9 +82,12 @@ public class BookServiceImpl implements BookService {
 
     @Override
     @Transactional
+    @Secured("ROLE_ADMIN")
     public void deleteById(long id) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication == null ? "Unknown" : authentication.getName();
         bookRepository.deleteById(id);
-        log.info("Book with id %d was deleted".formatted(id));
+        log.info("Book with id %d was deleted by user - %s".formatted(id, username));
     }
 
     private Genre findGenreById(long genreId) {

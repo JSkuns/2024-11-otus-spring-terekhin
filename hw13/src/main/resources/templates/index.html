@@ -107,6 +107,14 @@
     </div>
 </div>
 
+<div class="align-middle text-center" th:text="${username}">
+</div>
+
+<br>
+
+<form action="#" th:action="@{/logout}" method="post" class="align-middle text-center">
+    <button type="submit" class="btn btn-danger rounded-pill px-3">Logout</button>
+</form>
 
 </body>
 

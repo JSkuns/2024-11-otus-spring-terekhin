@@ -1,6 +1,7 @@
 package ru.otus.hw.controllers.advices;
 
 import lombok.extern.log4j.Log4j2;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -50,6 +51,15 @@ public class DefaultExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ModelAndView handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
         var errMsg = "Incorrect input data format";
+        log.error(errMsg, ex);
+        var modelAndView = new ModelAndView("error");
+        modelAndView.addObject("error_message", errMsg);
+        return modelAndView;
+    }
+
+    @ExceptionHandler(AuthorizationDeniedException.class)
+    public ModelAndView handleAuthorizationDeniedException(AuthorizationDeniedException ex) {
+        var errMsg = "The user is not authorized";
         log.error(errMsg, ex);
         var modelAndView = new ModelAndView("error");
         modelAndView.addObject("error_message", errMsg);

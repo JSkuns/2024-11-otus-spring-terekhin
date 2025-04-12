@@ -2,14 +2,20 @@ package ru.otus.hw.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.ExceptionHandlingConfigurer;
+import org.springframework.security.config.annotation.web.configurers.FormLoginConfigurer;
+import org.springframework.security.config.annotation.web.configurers.LogoutConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity(securedEnabled = true)
 public class SecurityConfig {
 
     /**
@@ -23,29 +29,56 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http
-//                .csrf(AbstractHttpConfigurer::disable) // отключить защиту от CSRF
+        return http
                 .authorizeHttpRequests(authorizeRequest -> authorizeRequest
-                                .requestMatchers("/", "/login").permitAll()
-                                .requestMatchers("/books/delete/**").hasRole("ADMIN")
-                                .requestMatchers("/books/create/**",
-                                        "/books/update/**").hasAnyRole("ADMIN", "USER")
-                                .requestMatchers("/comments/create/**",
-                                        "/comments/find_by_book_id/**",
-                                        "/comments/find/**").authenticated()
-                                .requestMatchers("/comments/delete/**",
-                                        "/comments/update/**").hasAnyRole("ADMIN", "USER")
-                                .anyRequest().authenticated()
+                        .requestMatchers(
+                                "/",
+                                "/login",
+                                "/logout/**").permitAll()
+
+                        .requestMatchers(
+                                "/books/create/**",
+                                "/books/update/**").hasAnyRole("ADMIN", "USER")
+
+                        .requestMatchers(
+                                "/comments/create/**",
+                                "/comments/find_by_book_id/**",
+                                "/comments/find/**").authenticated()
+
+                        .requestMatchers(
+                                "/comments/delete/**",
+                                "/comments/update/**").hasAnyRole("ADMIN", "USER")
+
+                        .anyRequest().authenticated()
                 )
-                .formLogin(form -> form
-                        .loginPage("/login")
-                        .usernameParameter("userName")
-                        .passwordParameter("password")
-                        .permitAll()
-                )
-// .logout(logout -> logout.logoutUrl("/logout").deleteCookies("JSESSIONID").logoutSuccessUrl("/").permitAll())
-                .exceptionHandling(configurer -> configurer.accessDeniedHandler(new CustomAccessDeniedHandler()));
-        return http.build();
+                .formLogin(setupLogin())
+                .logout(setupLogout())
+                .exceptionHandling(setupAccessDeniedHandler())
+                .build();
+    }
+
+    @Bean
+    public Customizer<FormLoginConfigurer<HttpSecurity>> setupLogin() {
+        return formLoginConfigurer -> formLoginConfigurer
+                .loginPage("/login")
+                .usernameParameter("userName")
+                .passwordParameter("password")
+                .permitAll();
+    }
+
+    @Bean
+    public Customizer<LogoutConfigurer<HttpSecurity>> setupLogout() {
+        return logoutConfigurer -> logoutConfigurer
+                .logoutUrl("/logout")
+                .deleteCookies("JSESSIONID")
+                .logoutSuccessUrl("/")
+                .permitAll();
+    }
+
+    @Bean
+    public Customizer<ExceptionHandlingConfigurer<HttpSecurity>> setupAccessDeniedHandler() {
+        return exceptionHandlingConfigurer -> exceptionHandlingConfigurer
+                .accessDeniedHandler(new CustomAccessDeniedHandler());
     }
 
 }
