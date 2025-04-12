@@ -35,20 +35,16 @@ public class SecurityConfig {
                                 "/",
                                 "/login",
                                 "/logout/**").permitAll()
-
                         .requestMatchers(
                                 "/books/create/**",
                                 "/books/update/**").hasAnyRole("ADMIN", "USER")
-
                         .requestMatchers(
                                 "/comments/create/**",
                                 "/comments/find_by_book_id/**",
                                 "/comments/find/**").authenticated()
-
                         .requestMatchers(
                                 "/comments/delete/**",
                                 "/comments/update/**").hasAnyRole("ADMIN", "USER")
-
                         .anyRequest().authenticated()
                 )
                 .formLogin(setupLogin())
