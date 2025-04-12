@@ -114,6 +114,13 @@ public class BooksControllerTest {
         verify(booksService).findById(any(Long.class));
     }
 
+    @WithMockUser(roles = "GUEST")
+    @Test
+    void shouldThrowForbiddenError403() throws Exception {
+        mockMvc.perform(post("/books/delete?book_id=%d".formatted(3)))
+                .andExpect(status().isForbidden());
+    }
+
     private List<GenreDto> getExpectedGenres() {
         List<GenreDto> genres = new ArrayList<>();
         genres.add(GenreDto.builder().id(1).name("Genre_1").build());

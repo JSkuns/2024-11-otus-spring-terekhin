@@ -6,7 +6,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import ru.otus.hw.exceptions.NotFoundException;
 import ru.otus.hw.models.User;
 import ru.otus.hw.repositories.UserRepository;
 
@@ -22,7 +21,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         User user = userRepository.findByUsername(username).orElseThrow(() -> {
             var errMsg = "User with username '%s' not found".formatted(username);
             log.error(errMsg);
-            return new NotFoundException(errMsg);
+            return new UsernameNotFoundException(errMsg);
         });
         return org.springframework.security.core.userdetails.User.builder()
                 .username(user.getUsername())
