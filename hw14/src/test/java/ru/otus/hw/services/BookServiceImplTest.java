@@ -8,9 +8,9 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
-import ru.otus.hw.models.Author;
-import ru.otus.hw.models.Book;
-import ru.otus.hw.models.Genre;
+import ru.otus.hw.models.h2.Author;
+import ru.otus.hw.models.h2.Book;
+import ru.otus.hw.models.h2.Genre;
 import ru.otus.hw.services.impl.BookServiceImpl;
 
 import java.util.List;

@@ -8,10 +8,11 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import ru.otus.hw.models.Author;
-import ru.otus.hw.models.Book;
-import ru.otus.hw.models.Comment;
-import ru.otus.hw.models.Genre;
+import ru.otus.hw.models.h2.Author;
+import ru.otus.hw.models.h2.Book;
+import ru.otus.hw.models.h2.Comment;
+import ru.otus.hw.models.h2.Genre;
+import ru.otus.hw.repositories.h2.CommentRepository;
 
 import java.util.List;
 import java.util.stream.IntStream;

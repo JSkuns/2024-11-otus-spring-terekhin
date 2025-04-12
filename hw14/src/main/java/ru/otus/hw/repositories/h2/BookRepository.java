@@ -1,8 +1,8 @@
-package ru.otus.hw.repositories;
+package ru.otus.hw.repositories.h2;
 
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
-import ru.otus.hw.models.Book;
+import ru.otus.hw.models.h2.Book;
 
 import java.util.List;
 import java.util.Optional;

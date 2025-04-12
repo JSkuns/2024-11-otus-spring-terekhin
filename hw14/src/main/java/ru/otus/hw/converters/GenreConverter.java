@@ -2,7 +2,7 @@ package ru.otus.hw.converters;
 
 import org.hibernate.LazyInitializationException;
 import org.springframework.stereotype.Component;
-import ru.otus.hw.models.Genre;
+import ru.otus.hw.models.h2.Genre;
 
 @Component
 public class GenreConverter {

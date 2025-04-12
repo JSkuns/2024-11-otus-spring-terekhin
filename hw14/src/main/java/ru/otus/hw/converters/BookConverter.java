@@ -3,7 +3,7 @@ package ru.otus.hw.converters;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.LazyInitializationException;
 import org.springframework.stereotype.Component;
-import ru.otus.hw.models.Book;
+import ru.otus.hw.models.h2.Book;
 
 @RequiredArgsConstructor
 @Component

@@ -6,7 +6,6 @@ spring:
     init:
       mode: always
       data-locations: data.sql
-#      schema-locations: schema.sql
   jpa:
     generate-ddl: false
     hibernate:
@@ -15,6 +14,14 @@ spring:
       hibernate:
         format_sql: true
     show-sql: true
+
+# mongo
+  data:
+    mongodb:
+      database: library
+      host: localhost
+      port: 27017
+
 logging:
   level:
     ROOT: INFO

@@ -1,4 +1,4 @@
-package ru.otus.hw.models;
+package ru.otus.hw.models.h2;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
@@ -18,14 +18,14 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "authors")
-public class Author {
+@Table(name = "genres")
+public class Genre {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @Column(name = "full_name", nullable = true, unique = false)
-    private String fullName;
+    @Column(name = "name", nullable = true, unique = false)
+    private String name;
 
 }
