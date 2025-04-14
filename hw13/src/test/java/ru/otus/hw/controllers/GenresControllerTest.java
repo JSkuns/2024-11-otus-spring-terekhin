@@ -8,6 +8,7 @@ import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.otus.hw.dto.models.genre.GenreDto;
+import ru.otus.hw.security.SecurityConfig;
 import ru.otus.hw.services.GenreService;
 
 import java.util.ArrayList;
@@ -17,10 +18,9 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WebMvcTest(controllers = GenresController.class)
+@WebMvcTest(controllers = {GenresController.class, SecurityConfig.class})
 public class GenresControllerTest {
 
     @MockBean
@@ -43,7 +43,8 @@ public class GenresControllerTest {
     @Test
     void shouldThrowUnauthorizedError401() throws Exception {
         mockMvc.perform(get("/genres"))
-                .andExpect(status().isUnauthorized());
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrlPattern("**/login"));
         verify(genreService, never()).findAll();
     }
 

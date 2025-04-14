@@ -14,6 +14,7 @@ import ru.otus.hw.dto.models.book.BookCreateDto;
 import ru.otus.hw.dto.models.book.BookDto;
 import ru.otus.hw.dto.models.book.BookUpdateDto;
 import ru.otus.hw.dto.models.genre.GenreDto;
+import ru.otus.hw.security.SecurityConfig;
 import ru.otus.hw.services.BookService;
 
 import java.util.ArrayList;
@@ -28,7 +29,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WebMvcTest(controllers = BooksController.class)
+@WebMvcTest(controllers = {BooksController.class, SecurityConfig.class})
 public class BooksControllerTest {
 
     @MockBean
@@ -98,9 +99,10 @@ public class BooksControllerTest {
 
     @WithAnonymousUser
     @Test
-    void shouldThrowUnauthorizedError401() throws Exception {
+    void shouldRedirectToLogin302() throws Exception {
         mockMvc.perform(post("/books/delete?book_id=%d".formatted(1)).with(csrf()))
-                .andExpect(status().isUnauthorized());
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrlPattern("**/login"));
         verify(booksService, never()).deleteById(any(Long.class));
     }
 
@@ -116,9 +118,10 @@ public class BooksControllerTest {
 
     @WithMockUser(roles = "GUEST")
     @Test
-    void shouldThrowForbiddenError403() throws Exception {
+    void shouldRedirectToAccessDenied302() throws Exception {
         mockMvc.perform(post("/books/delete?book_id=%d".formatted(3)))
-                .andExpect(status().isForbidden());
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/access-denied"));
     }
 
     private List<GenreDto> getExpectedGenres() {

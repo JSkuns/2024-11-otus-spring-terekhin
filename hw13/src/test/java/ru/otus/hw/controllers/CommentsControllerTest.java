@@ -13,6 +13,7 @@ import ru.otus.hw.dto.models.book.BookDto;
 import ru.otus.hw.dto.models.comment.CommentCreateDto;
 import ru.otus.hw.dto.models.comment.CommentDto;
 import ru.otus.hw.dto.models.comment.CommentUpdateDto;
+import ru.otus.hw.security.SecurityConfig;
 import ru.otus.hw.services.CommentService;
 
 import java.util.ArrayList;
@@ -27,7 +28,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WebMvcTest(controllers = CommentsController.class)
+@WebMvcTest(controllers = {CommentsController.class, SecurityConfig.class})
 public class CommentsControllerTest {
 
     @MockBean
@@ -78,9 +79,10 @@ public class CommentsControllerTest {
 
     @WithAnonymousUser
     @Test
-    void shouldThrowUnauthorizedError401() throws Exception {
+    void shouldRedirectToLogin302() throws Exception {
         mockMvc.perform(post("/comments/delete?comment_id=1").with(csrf()))
-                .andExpect(status().isUnauthorized());
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrlPattern("**/login"));
         verify(commentService, never()).deleteById(any(Long.class));
     }
 
