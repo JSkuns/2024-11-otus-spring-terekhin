@@ -1,9 +1,9 @@
 package ru.otus.hw.batch;
 
+import lombok.AllArgsConstructor;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.repository.JobRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import ru.otus.hw.batch.steps.AuthorStep;
@@ -12,26 +12,24 @@ import ru.otus.hw.batch.steps.CommentStep;
 import ru.otus.hw.batch.steps.GenreStep;
 
 @Configuration
+@AllArgsConstructor
 public class MigrationJobConfig {
 
-    @Autowired
-    private AuthorStep authorStep;
+    protected final static String MIGRATE_JOB = "migrateJob";
 
-    @Autowired
-    private BookStep bookStep;
+    private final AuthorStep authorStep;
 
-    @Autowired
-    private GenreStep genreStep;
+    private final BookStep bookStep;
 
-    @Autowired
-    private CommentStep commentStep;
+    private final GenreStep genreStep;
 
-    @Autowired
-    private JobRepository jobRepository;
+    private final CommentStep commentStep;
+
+    private final JobRepository jobRepository;
 
     @Bean
     public Job migrationJob() {
-        return new JobBuilder("migrateJob", jobRepository)
+        return new JobBuilder(MIGRATE_JOB, jobRepository)
                 .start(authorStep.migrateAuthorsStep())
                 .next(genreStep.migrateGenresStep())
                 .next(bookStep.migrateBooksStep())
