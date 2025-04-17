@@ -35,7 +35,6 @@ public class MigrationJobConfigTest {
     }
 
     @Test
-//    @Timeout(value = 3, unit = TimeUnit.SECONDS)
     public void testMigrationJobCompletion() throws Exception {
         // Проверяем, что job загружена правильно
         Job job = jobLauncherTestUtils.getJob();
