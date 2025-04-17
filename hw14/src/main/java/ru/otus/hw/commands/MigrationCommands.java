@@ -1,6 +1,5 @@
 package ru.otus.hw.commands;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobExecution;
@@ -11,7 +10,6 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 
-@RequiredArgsConstructor
 @ShellComponent
 @Slf4j
 public class MigrationCommands {
@@ -19,6 +17,11 @@ public class MigrationCommands {
     private final JobLauncher jobLauncher;
 
     private final ConfigurableApplicationContext context;
+
+    public MigrationCommands(JobLauncher jobLauncher, ConfigurableApplicationContext context) {
+        this.jobLauncher = jobLauncher;
+        this.context = context;
+    }
 
     /**
      * Запуск миграции данных.

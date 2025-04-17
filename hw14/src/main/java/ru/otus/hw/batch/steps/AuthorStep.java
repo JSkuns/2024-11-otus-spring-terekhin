@@ -17,6 +17,8 @@ import ru.otus.hw.models.mongo.MongoAuthor;
 @AllArgsConstructor
 public class AuthorStep {
 
+    public static final String MIGRATE_AUTHOR_STEP = "migrateAuthorStep";
+
     private static final int CHUNK_SIZE = 2;
 
     private final JobRepository jobRepository;
@@ -31,7 +33,7 @@ public class AuthorStep {
 
     @Bean
     public Step migrateAuthorsStep() {
-        return new StepBuilder("migrateAuthorStep", jobRepository)
+        return new StepBuilder(MIGRATE_AUTHOR_STEP, jobRepository)
                 .<Author, MongoAuthor>chunk(CHUNK_SIZE, platformTransactionManager)
                 .reader(itemReader)
                 .processor(itemProcessor)
