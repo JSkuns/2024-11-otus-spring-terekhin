@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <title>Library | Login</title>
+    <link href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+
+<style>
+    h1 {
+        margin-bottom: 40px;
+        margin-top: 20px;
+    }
+
+    div {
+        margin-bottom: 10px;
+        margin-top: 15px;
+    }
+</style>
+
+
+<body class="container">
+
+
+<ol class="breadcrumb p-3 bg-body-tertiary rounded-3">
+    <li class="breadcrumb-item"><a th:href="'/'">Home</a></li>
+    <li class="breadcrumb-item"><a th:href="'/login'">Login</a></li>
+</ol>
+
+
+<h1 class="align-middle text-center">
+    Library | Login
+</h1>
+
+
+<div class="align-middle text-center">
+    <b>The system has (login and password are the same):</b>
+    <br>
+    'admin', 'user', 'guest'
+    <br>
+</div>
+
+
+<div class="align-middle text-center" th:if="${param.error}">
+    <b style="color: #FF5500;">
+        Invalid username and / or password
+    </b>
+    <br>
+</div>
+
+
+<form th:method="POST" th:action="@{/login}" class="align-middle text-center">
+    <div>
+        <label for="userName-input">Enter the name of user -></label>
+        <input id="userName-input" type="text" name="userName" placeholder="Login">
+    </div>
+    <div>
+        <label for="password-id-input">Enter the password -></label>
+        <input id="password-id-input" type="text" name="password" placeholder="Password">
+    </div>
+    <div>
+        <button type="submit" class="btn btn-success rounded-pill px-3">Log in</button>
+    </div>
+</form>
+
+
+</body>
+
+</html>
