@@ -45,6 +45,8 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/comments/delete/**",
                                 "/comments/update/**").hasAnyRole("ADMIN", "USER")
+                        .requestMatchers(
+                                "/actuator/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .formLogin(setupLogin())

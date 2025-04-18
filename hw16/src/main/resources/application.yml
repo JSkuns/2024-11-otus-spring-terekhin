@@ -17,6 +17,29 @@ spring:
       ddl-auto: none
 
 
+# Включить доступные эндпоинты, предоставляющие метрики, проверку здоровья и журнал логов
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, metrics, logs
+
+  endpoint:
+    health:
+      show-details: always
+
+  health:
+    diskspace:
+      enabled: false
+    db:
+      enabled: false
+    ping:
+      enabled: false
+
+
 logging:
+  file:
+    name: app.log
+
   level:
     ROOT: INFO
