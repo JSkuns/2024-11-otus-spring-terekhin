@@ -31,28 +31,44 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http
                 .authorizeHttpRequests(authorizeRequest -> authorizeRequest
-                        .requestMatchers(
-                                "/",
-                                "/login",
-                                "/logout/**").permitAll()
-                        .requestMatchers(
-                                "/books/create/**",
-                                "/books/update/**").hasAnyRole("ADMIN", "USER")
-                        .requestMatchers(
-                                "/comments/create/**",
-                                "/comments/find_by_book_id/**",
-                                "/comments/find/**").authenticated()
-                        .requestMatchers(
-                                "/comments/delete/**",
-                                "/comments/update/**").hasAnyRole("ADMIN", "USER")
-                        .requestMatchers(
-                                "/actuator/**").hasRole("ADMIN")
+                        .requestMatchers(actuatorMatchers()).hasRole("ADMIN")
+                        .requestMatchers(booksMatchers()).hasAnyRole("ADMIN", "USER")
+                        .requestMatchers(commentsMatchers()).hasAnyRole("ADMIN", "USER")
+                        .requestMatchers(publicMatchers()).permitAll()
                         .anyRequest().authenticated()
                 )
                 .formLogin(setupLogin())
                 .logout(setupLogout())
                 .exceptionHandling(setupAccessDeniedHandler())
                 .build();
+    }
+
+    private String[] publicMatchers() {
+        return new String[]{
+                "/",
+                "/login",
+                "/logout/**"
+        };
+    }
+
+    private String[] booksMatchers() {
+        return new String[]{
+                "/books/create/**",
+                "/books/update/**"
+        };
+    }
+
+    private String[] commentsMatchers() {
+        return new String[]{
+                "/comments/delete/**",
+                "/comments/update/**"
+        };
+    }
+
+    private String[] actuatorMatchers() {
+        return new String[]{
+                "/actuator/**"
+        };
     }
 
     @Bean
