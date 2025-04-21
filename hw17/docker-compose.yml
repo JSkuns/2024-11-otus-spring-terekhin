@@ -1,13 +1,24 @@
+# Используем последнюю стабильную версию синтаксиса Docker Compose
 version: '3.8'
 services:
   app:
-    image: app
+    # Имя образа Docker
+    image: library
+
+    # Имя контейнера
+    container_name: Library
+
+    # Запросы, приходящие на порт 8080 хоста, отправляются на порт 8081 внутри контейнера
     ports:
       - "8080:8080"
+
+    # Настройка переменных среды, используемых внутри контейнера
     environment:
       - SPRING_PROFILES_ACTIVE=docker
+
+    # Блок инструкции по сборке образа Docker
     build:
       # Собираем из текущей директории
       context: .
-      # Используем Dockerfile
+      # Используем Dockerfile, файл, содержащий инструкцию по сборке образа Docker
       dockerfile: Dockerfile

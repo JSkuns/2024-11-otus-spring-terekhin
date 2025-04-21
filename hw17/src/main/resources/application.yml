@@ -42,4 +42,4 @@ logging:
     name: app.log
 
   level:
-    ROOT: INFO
+    root: INFO
