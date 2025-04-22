@@ -5,9 +5,13 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.security.test.context.support.WithMockUser;
 import ru.otus.hw.dto.mappers.impl.AuthorDtoMapper;
 import ru.otus.hw.dto.mappers.impl.BookDtoMapper;
 import ru.otus.hw.dto.mappers.impl.GenreDtoMapper;
@@ -16,9 +20,7 @@ import ru.otus.hw.dto.models.book.BookCreateDto;
 import ru.otus.hw.dto.models.book.BookDto;
 import ru.otus.hw.dto.models.book.BookUpdateDto;
 import ru.otus.hw.dto.models.genre.GenreDto;
-import ru.otus.hw.models.Author;
-import ru.otus.hw.models.Book;
-import ru.otus.hw.models.Genre;
+import ru.otus.hw.repositories.BookRepository;
 import ru.otus.hw.services.impl.BookServiceImpl;
 
 import java.util.List;
@@ -26,6 +28,9 @@ import java.util.stream.IntStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.doThrow;
 
 @DataJpaTest
 @Import({BookServiceImpl.class, BookDtoMapper.class, AuthorDtoMapper.class, GenreDtoMapper.class})
@@ -34,14 +39,48 @@ public class BookServiceImplTest {
     @Autowired
     private BookService bookService;
 
+    @Mock
+    private BookRepository bookRepository;
+
     private List<AuthorDto> dbAuthors;
 
     private List<GenreDto> dbGenres;
 
     private List<BookDto> dbBooks;
 
+    private static List<AuthorDto> getDbAuthors() {
+        return IntStream
+                .range(1, 4)
+                .boxed()
+                .map(id -> new AuthorDto(id, "Author_" + id))
+                .toList();
+    }
+
+    private static List<GenreDto> getDbGenres() {
+        return IntStream
+                .range(1, 4)
+                .boxed()
+                .map(id -> new GenreDto(id, "Genre_" + id))
+                .toList();
+    }
+
+    private static List<BookDto> getDbBooks(List<AuthorDto> dbAuthors, List<GenreDto> dbGenres) {
+        return IntStream
+                .range(1, 4)
+                .boxed()
+                .map(id -> new BookDto(id, "BookTitle_" + id, dbAuthors.get(id - 1), dbGenres.get(id - 1)))
+                .toList();
+    }
+
+    private static List<BookDto> getDbBooks() {
+        var dbAuthors = getDbAuthors();
+        var dbGenres = getDbGenres();
+        return getDbBooks(dbAuthors, dbGenres);
+    }
+
     @BeforeEach
     void setUp() {
+        MockitoAnnotations.openMocks(this);
         dbAuthors = getDbAuthors();
         dbGenres = getDbGenres();
         dbBooks = getDbBooks(dbAuthors, dbGenres);
@@ -72,7 +111,7 @@ public class BookServiceImplTest {
     @Test
     @DisplayName("должен сохранять новую книгу")
     void shouldSaveNewBook() {
-        var expectedBook = new BookCreateDto( "BookTitle_10500", dbAuthors.get(0).getId(), dbGenres.get(0).getId());
+        var expectedBook = new BookCreateDto("BookTitle_10500", dbAuthors.get(0).getId(), dbGenres.get(0).getId());
         var returnedBook = bookService.create(expectedBook);
 
         assertThat(returnedBook)
@@ -120,34 +159,18 @@ public class BookServiceImplTest {
         assertThatThrownBy(() -> bookService.findById(testId)).isInstanceOf(NullPointerException.class);
     }
 
-    private static List<AuthorDto> getDbAuthors() {
-        return IntStream
-                .range(1, 4)
-                .boxed()
-                .map(id -> new AuthorDto(id, "Author_" + id))
-                .toList();
-    }
-
-    private static List<GenreDto> getDbGenres() {
-        return IntStream
-                .range(1, 4)
-                .boxed()
-                .map(id -> new GenreDto(id, "Genre_" + id))
-                .toList();
-    }
-
-    private static List<BookDto> getDbBooks(List<AuthorDto> dbAuthors, List<GenreDto> dbGenres) {
-        return IntStream
-                .range(1, 4)
-                .boxed()
-                .map(id -> new BookDto(id, "BookTitle_" + id, dbAuthors.get(id - 1), dbGenres.get(id - 1)))
-                .toList();
-    }
-
-    private static List<BookDto> getDbBooks() {
-        var dbAuthors = getDbAuthors();
-        var dbGenres = getDbGenres();
-        return getDbBooks(dbAuthors, dbGenres);
+    /**
+     * Метод fallback должен корректно выполняться при сбое основного метода.
+     */
+    @Test
+    @WithMockUser
+    void testFallbackMethod() {
+        doThrow(new EmptyResultDataAccessException(1)).when(bookRepository).findById(anyLong());
+        try {
+            bookService.findById(1L);
+        } catch (RuntimeException e) {
+            assertEquals("Could not fetch the book", e.getMessage());
+        }
     }
 
 }

@@ -1,5 +1,9 @@
 package ru.otus.hw.services.impl;
 
+import io.github.resilience4j.bulkhead.annotation.Bulkhead;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.retry.annotation.Retry;
+import io.github.resilience4j.timelimiter.annotation.TimeLimiter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.annotation.Secured;
@@ -38,9 +42,18 @@ public class BookServiceImpl implements BookService {
 
     @Override
     @Transactional(readOnly = true)
+    @CircuitBreaker(name = "bookCB", fallbackMethod = "fallbackFindById")
+    @Retry(name = "bookR")
+    @Bulkhead(name = "bookBH", type = Bulkhead.Type.THREADPOOL)
+    @TimeLimiter(name = "bookTL")
     public BookDto findById(long id) {
         var book = bookRepository.findById(id).orElse(null);
         return bookDtoMapper.toDto(Objects.requireNonNull(book));
+    }
+
+    public BookDto fallbackFindById(long id, Throwable t) {
+        log.warn("Error finding book by ID {}: {}", id, t.getMessage());
+        throw new RuntimeException("Could not fetch the book");
     }
 
     @Override
