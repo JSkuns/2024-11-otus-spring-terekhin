@@ -1,14 +1,14 @@
 # Используем последнюю стабильную версию синтаксиса Docker Compose
 version: '3.8'
 services:
-  app:
+  library-service:
     # Имя образа Docker
     image: library
 
     # Имя контейнера
     container_name: Library
 
-    # Запросы, приходящие на порт 8080 хоста, отправляются на порт 8081 внутри контейнера
+    # Запросы, приходящие на порт 8080 хоста, отправляются на порт 8080 внутри контейнера
     ports:
       - "8080:8080"
 
@@ -22,3 +22,8 @@ services:
       context: .
       # Используем Dockerfile, файл, содержащий инструкцию по сборке образа Docker
       dockerfile: Dockerfile
+
+  database-service:
+    image: database
+    ports:
+      - "8080:8081"
