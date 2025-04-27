@@ -22,21 +22,19 @@ services:
         condition: service_healthy
     environment:
       SPRING_DATABASE_URL: jdbc:postgresql://database-service:5432/library_db
-      SPRING_DATABASE_USERNAME: my_user
-      SPRING_DATABASE_PASSWORD: my_password
+      SPRING_DATABASE_USERNAME: postgres
+      SPRING_DATABASE_PASSWORD: postgres
 
 
   database-service:
     image: postgres
     container_name: Database
     environment:
-      POSTGRES_USER: my_user
-      POSTGRES_PASSWORD: my_password
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
       POSTGRES_DB: library_db
     ports:
       - "5432:5432"   # Порт 5432 — стандартный порт для PostgreSQL
-    volumes:
-      - db_data:/var/lib/postgresql/data
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U $$POSTGRES_USER" ]
       interval: 10s
