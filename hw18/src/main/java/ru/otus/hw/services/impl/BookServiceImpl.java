@@ -3,7 +3,6 @@ package ru.otus.hw.services.impl;
 import io.github.resilience4j.bulkhead.annotation.Bulkhead;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.retry.annotation.Retry;
-import io.github.resilience4j.timelimiter.annotation.TimeLimiter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.annotation.Secured;
@@ -12,9 +11,11 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.otus.hw.dto.mappers.impl.BookDtoMapper;
+import ru.otus.hw.dto.models.author.AuthorDto;
 import ru.otus.hw.dto.models.book.BookCreateDto;
 import ru.otus.hw.dto.models.book.BookDto;
 import ru.otus.hw.dto.models.book.BookUpdateDto;
+import ru.otus.hw.dto.models.genre.GenreDto;
 import ru.otus.hw.exceptions.NotFoundException;
 import ru.otus.hw.models.Author;
 import ru.otus.hw.models.Book;
@@ -45,7 +46,6 @@ public class BookServiceImpl implements BookService {
     @CircuitBreaker(name = "bookCB", fallbackMethod = "fallbackFindById")
     @Retry(name = "bookR")
     @Bulkhead(name = "bookBH", type = Bulkhead.Type.THREADPOOL)
-    @TimeLimiter(name = "bookTL")
     public BookDto findById(long id) {
         var book = bookRepository.findById(id).orElse(null);
         return bookDtoMapper.toDto(Objects.requireNonNull(book));
@@ -53,7 +53,12 @@ public class BookServiceImpl implements BookService {
 
     public BookDto fallbackFindById(long id, Throwable t) {
         log.warn("Error finding book by ID {}: {}", id, t.getMessage());
-        throw new RuntimeException("Could not fetch the book");
+        return new BookDto(
+                -1L,
+                "No title",
+                new AuthorDto(-1L, "Nobody"),
+                new GenreDto(-1L, "No genre")
+        );
     }
 
     @Override
