@@ -1,0 +1,64 @@
+spring:
+
+  datasource:
+    url: jdbc:h2:mem:library
+
+  flyway:
+    locations: classpath:db/migration
+    enabled: true
+
+  jpa:
+    generate-ddl: false
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+    hibernate:
+      ddl-auto: none
+
+
+# Включить доступные эндпоинты, предоставляющие метрики, проверку здоровья и журнал логов
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, metrics, logs
+
+  endpoint:
+    health:
+      show-details: always
+
+  health:
+    diskspace:
+      enabled: false
+    db:
+      enabled: false
+    ping:
+      enabled: false
+
+
+logging:
+  file:
+    name: app.log
+
+  level:
+    root: INFO
+
+
+  resilience4j:
+    # Настройки Circuit Breaker
+    circuitbreaker:
+      instances:
+        default:
+          registerHealthIndicator: true
+          slidingWindowType: COUNT_BASED # будет учитывать количество вызовов
+          slowCallDurationThreshold: PT0.5S # Медленные вызовы > 500 ms
+          failureRateThreshold: 50 # Порог ошибок 50%
+          waitDurationInOpenState: PT10S # Время ожидания в открытом состоянии 10 секунд
+
+    # Настройки повтора (Retry)
+    retry:
+      instances:
+        bookR:
+          maxAttempts: 3 # Максимальное число попыток = 3
+          waitDuration: PT0.5S # Интервал ожидания между попытками 500 ms
