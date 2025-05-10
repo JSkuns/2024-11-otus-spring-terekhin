@@ -1,0 +1,42 @@
+services:
+  library-service:
+    # Имя образа Docker
+    image: library
+
+    # Имя контейнера
+    container_name: Library
+
+    # Запросы, приходящие на порт 8080 хоста, отправляются на порт 8080 внутри контейнера
+    ports:
+      - "8080:8080"
+
+    # Блок инструкции по сборке образа Docker
+    build:
+      # Собираем из текущей директории
+      context: .
+      # Используем Dockerfile, файл, содержащий инструкцию по сборке образа Docker
+      dockerfile: Dockerfile
+
+    depends_on:
+      database-service:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://database-service:5432/library_db
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+
+
+  database-service:
+    image: postgres
+    container_name: Database
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: library_db
+    ports:
+      - "5432:5432"   # Порт 5432 — стандартный порт для PostgreSQL
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U $$POSTGRES_USER" ]
+      interval: 20s
+      timeout: 10s
+      retries: 5
