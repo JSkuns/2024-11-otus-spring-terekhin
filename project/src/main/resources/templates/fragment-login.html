@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+        <title>Header Fragment</title>
+        <link href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    </head>
+
+    <body>
+
+        <div th:fragment="fragment-login">
+
+            <div class="align-middle text-center">
+                To use the library's services, you need to log in
+            </div>
+            <div class="align-middle text-center">
+                <a th:href="'login'">Log in</a>
+            </div>
+
+            <div class="align-middle text-center" th:text="${username}">
+            </div>
+
+            <form action="#" th:action="@{/logout}" method="post" class="align-middle text-center">
+                <button type="submit" class="btn btn-danger rounded-pill px-3">Logout</button>
+            </form>
+
+        </div>
+
+    </body>
+
+</html>

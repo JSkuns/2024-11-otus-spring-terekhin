@@ -1,0 +1,48 @@
+spring:
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/project_db
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
+
+  flyway:
+    locations: classpath:db/migration
+    enabled: true
+
+  jpa:
+    generate-ddl: false
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: none
+
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, metrics, logs
+
+  endpoint:
+    health:
+      show-details: always
+
+  health:
+    diskspace:
+      enabled: false
+    db:
+      enabled: false
+    ping:
+      enabled: false
+
+
+logging:
+  file:
+    name: app.log
+
+  level:
+    root: INFO
