@@ -1,7 +1,8 @@
-package ru.otus.project.repository;
+package ru.otus.project.repositories;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import ru.otus.project.entity.Tool;
+import ru.otus.project.models.Tool;
 
 public interface ToolRepository extends JpaRepository<Tool, Long> {
+
 }

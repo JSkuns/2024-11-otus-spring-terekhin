@@ -2,26 +2,130 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
 
     <head>
+        <title th:text="#{project.title}">
+            Technical information system
+        </title>
+
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-        <title>Technical information system</title>
         <link href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
     </head>
+
+    <style>
+        h1 {
+            margin-bottom: 40px;
+            margin-top: 20px;
+        }
+        div {
+            margin-bottom: 10px;
+            margin-top: 15px;
+        }
+    </style>
 
     <body class="container">
 
         <!-- Хлебные крошки -->
         <ol class="breadcrumb p-3 bg-body-tertiary rounded-3">
-            <li class="breadcrumb-item"><a th:href="'/'">_____</a></li>
+            <li class="breadcrumb-item"><a th:href="'/'">🏠︎</a></li>
         </ol>
 
-        <h1 class="align-middle text-center">
-            _____
+        <!-- Локализация -->
+        <div class="align-middle text-center">
+            <a href="/locale?lang=ru-RU" onclick="window.location.reload();" class="btn btn-info rounded-pill px-3">RU</a>
+            <a href="/locale?lang=en-US" onclick="window.location.reload();" class="btn btn-info rounded-pill px-3">EN</a>
+        </div>
+
+        <!-- Заголовок -->
+        <h1 class="align-middle text-center" th:text="#{project.title.short} + ' | Home'">
+            TIS | Home
         </h1>
 
-        <!-- Подключаем fragment login -->
-        <div th:replace="~{header :: fragment-login}"></div>
+        <div class="row row-cols-1 row-cols-md-4 mb-3 text-center">
+            <div class="col">
+                <div class="card mb-4 rounded-3 shadow-sm">
+                    <div class="card-header py-3">
+                        <h4 class="my-0 fw-normal">
+                            Books
+                        </h4>
+                    </div>
+                    <div class="card-body">
+                        <a th:href="'books'">
+                            <button type="button" class="w-100 btn btn-lg btn-outline-primary">
+                                Get started
+                            </button>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card mb-4 rounded-3 shadow-sm">
+                    <div class="card-header py-3">
+                        <h4 class="my-0 fw-normal">
+                            Tools
+                        </h4>
+                    </div>
+                    <div class="card-body">
+                        <a th:href="'tools'">
+                            <button type="button" class="w-100 btn btn-lg btn-outline-primary">
+                                Get started
+                            </button>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card mb-4 rounded-3 shadow-sm">
+                    <div class="card-header py-3">
+                        <h4 class="my-0 fw-normal">
+                            Genres
+                        </h4>
+                    </div>
+                    <div class="card-body">
+                        <a th:href="'genres'">
+                            <button type="button" class="w-100 btn btn-lg btn-outline-primary">
+                                Get started
+                            </button>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card mb-4 rounded-3 shadow-sm">
+                    <div class="card-header py-3">
+                        <h4 class="my-0 fw-normal">
+                            Comments
+                        </h4>
+                    </div>
+                    <div class="card-body">
+                        <a th:href="'comments'">
+                            <button type="button" class="w-100 btn btn-lg btn-outline-primary">
+                                Get started
+                            </button>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-        <!-- Ссылки на метрики -->
+        <div class="align-middle text-center">
+            Active user = <span style="color: red;" th:text="${username}"></span>
+        </div>
+
+        <div class="align-middle text-center">
+            <table style="width: 100%;">
+                <tr>
+                    <td style="text-align: center; vertical-align: middle;">
+                        <a th:href="'login'" class="btn btn-info rounded-pill px-3 w-50">Login</a>
+                    </td>
+                    <td style="text-align: center; vertical-align: middle;">
+                        <form action="#" th:action="@{/logout}" method="post">
+                            <button type="submit" class="btn btn-danger rounded-pill px-3 w-50">Logout</button>
+                        </form>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+
         <div class="align-middle text-center">
             <a href="actuator/health">Health</a>
         </div>

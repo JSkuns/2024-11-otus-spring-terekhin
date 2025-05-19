@@ -16,9 +16,17 @@ spring:
     properties:
       hibernate:
         format_sql: true
-        dialect: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
-      ddl-auto: none
+      ddl-auto: update
+
+  messages:
+    basename: i18n/messages
+    encoding: UTF-8
+    cache-duration: -1
+    fallbackToSystemLocale: false
+
+  web:
+    locale: en-US
 
 
 management:

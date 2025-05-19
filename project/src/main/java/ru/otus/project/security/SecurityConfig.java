@@ -1,4 +1,4 @@
-package ru.otus.project.config;
+package ru.otus.project.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,6 +18,10 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableMethodSecurity(securedEnabled = true)
 public class SecurityConfig {
 
+    /**
+     * Создаём бин PasswordEncoder для шифрования паролей пользователей перед сохранением в БД
+     * Используем алгоритм шифрования BCrypt с уровнем сложности 10
+     */
     @Bean
     public PasswordEncoder bCryptPasswordEncoder() {
         return new BCryptPasswordEncoder(10);
@@ -27,39 +31,40 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http
                 .authorizeHttpRequests(authorizeRequest -> authorizeRequest
-//                        .requestMatchers(actuatorMatchers()).hasRole("ADMIN")
-//                        .requestMatchers(booksMatchers()).hasAnyRole("ADMIN", "USER")
+                        .requestMatchers(actuatorMatchers()).hasRole("ADMIN")
+                        .requestMatchers(toolsMatchers()).hasAnyRole("ADMIN", "USER")
 //                        .requestMatchers(commentsMatchers()).hasAnyRole("ADMIN", "USER")
                         .requestMatchers(publicMatchers()).permitAll()
                         .anyRequest().authenticated()
                 )
                 .formLogin(setupLogin())
-//                .logout(setupLogout())
-//                .exceptionHandling(setupAccessDeniedHandler())
+                .logout(setupLogout())
+                .exceptionHandling(setupAccessDeniedHandler())
                 .build();
     }
 
     private String[] publicMatchers() {
         return new String[]{
-                "/"
-//                "/login",
-//                "/logout/**"
+                "/",
+                "/login",
+                "/logout/**",
+                "/locale/**"
         };
     }
 
-    private String[] booksMatchers() {
+    private String[] toolsMatchers() {
         return new String[]{
-                "/books/create/**",
-                "/books/update/**"
+                "/tools/create/**",
+                "/tools/update/**"
         };
     }
 
-    private String[] commentsMatchers() {
-        return new String[]{
-                "/comments/delete/**",
-                "/comments/update/**"
-        };
-    }
+//    private String[] commentsMatchers() {
+//        return new String[]{
+//                "/comments/delete/**",
+//                "/comments/update/**"
+//        };
+//    }
 
     private String[] actuatorMatchers() {
         return new String[]{
@@ -85,10 +90,10 @@ public class SecurityConfig {
                 .permitAll();
     }
 
-//    @Bean
-//    public Customizer<ExceptionHandlingConfigurer<HttpSecurity>> setupAccessDeniedHandler() {
-//        return exceptionHandlingConfigurer -> exceptionHandlingConfigurer
-//                .accessDeniedHandler(new CustomAccessDeniedHandler());
-//    }
+    @Bean
+    public Customizer<ExceptionHandlingConfigurer<HttpSecurity>> setupAccessDeniedHandler() {
+        return exceptionHandlingConfigurer -> exceptionHandlingConfigurer
+                .accessDeniedHandler(new CustomAccessDeniedHandler());
+    }
 
 }

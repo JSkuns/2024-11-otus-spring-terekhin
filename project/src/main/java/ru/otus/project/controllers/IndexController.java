@@ -1,4 +1,4 @@
-package ru.otus.project.controller;
+package ru.otus.project.controllers;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
