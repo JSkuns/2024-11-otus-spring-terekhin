@@ -25,9 +25,8 @@ spring:
     cache-duration: -1
     fallbackToSystemLocale: false
 
-  web:
-    locale: en-US
-
+  main:
+    allow-bean-definition-overriding: true
 
 management:
   endpoints:

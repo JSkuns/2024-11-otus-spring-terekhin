@@ -43,8 +43,7 @@ public class ToolsServiceImpl implements ToolsService {
         });
     }
 
-    @Override
-    public ToolDto save(ToolDto toolDto) {
+    public ToolDto createUpdate(ToolDto toolDto) {
         Tool tool = toolDtoMapper.toModel(toolDto);
         Tool savedTool = toolRepository.save(tool);
         return toolDtoMapper.toDto(savedTool);

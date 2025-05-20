@@ -1,10 +1,10 @@
 package ru.otus.project.controllers;
 
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 
 import java.util.Locale;
 
@@ -12,10 +12,12 @@ import java.util.Locale;
 public class LocaleController {
 
     @GetMapping("/locale")
-    @CacheEvict(value = {"messages"}, allEntries = true)
-    public String setLocale(@RequestParam("lang") String lang, HttpServletRequest request) {
-        Locale locale = new Locale(lang);
-        request.getSession().setAttribute("org.springframework.core.convert.LocalizedConverter.LOCALE", locale);
+    public String changeLocale(@RequestParam(name = "lang", required = true) String lang,
+                               HttpServletRequest request) {
+        if (!lang.isEmpty()) {
+            Locale locale = new Locale(lang);
+            request.getSession().setAttribute(SessionLocaleResolver.LOCALE_SESSION_ATTRIBUTE_NAME, locale);
+        }
         return "redirect:/";
     }
 

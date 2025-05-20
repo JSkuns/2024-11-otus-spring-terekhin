@@ -10,7 +10,7 @@ public interface ToolsService {
 
     ToolDto findById(Long id);
 
-    ToolDto save(ToolDto toolDto);
+    ToolDto createUpdate(ToolDto toolDto);
 
     void deleteById(Long id);
 
