@@ -1,5 +1,5 @@
 services:
-  library-service:
+  project-service:
     image: project
     container_name: Project
     ports:

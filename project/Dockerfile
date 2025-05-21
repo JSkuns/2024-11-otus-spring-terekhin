@@ -8,7 +8,7 @@ FROM openjdk:17-jdk-slim AS base
 WORKDIR /app
 
 # Копируем артефакт приложения (например, JAR-файл) в контейнер
-COPY target/hw17-0.0.1-SNAPSHOT.jar /app.jar
+COPY target/project-0.0.1-SNAPSHOT.jar /app.jar
 
 # Запускаем приложение при запуске контейнера
 CMD ["java", "-jar", "/app.jar"]
