@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.otus.project.dto.mappers.impl.ToolDtoMapper;
-import ru.otus.project.dto.models.tool.ToolDto;
+import ru.otus.project.dto.models.ToolDto;
 import ru.otus.project.exceptions.NotFoundException;
 import ru.otus.project.models.Tool;
 import ru.otus.project.repositories.ToolRepository;

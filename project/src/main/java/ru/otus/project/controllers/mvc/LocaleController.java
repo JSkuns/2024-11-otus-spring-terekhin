@@ -1,4 +1,4 @@
-package ru.otus.project.controllers;
+package ru.otus.project.controllers.mvc;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Controller;

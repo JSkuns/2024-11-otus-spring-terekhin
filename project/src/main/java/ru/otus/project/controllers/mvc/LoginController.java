@@ -1,4 +1,4 @@
-package ru.otus.project.controllers;
+package ru.otus.project.controllers.mvc;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;

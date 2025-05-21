@@ -1,6 +1,6 @@
 package ru.otus.project.services;
 
-import ru.otus.project.dto.models.tool.ToolDto;
+import ru.otus.project.dto.models.ToolDto;
 
 import java.util.List;
 

@@ -6,6 +6,7 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer;
 import org.springframework.security.config.annotation.web.configurers.ExceptionHandlingConfigurer;
 import org.springframework.security.config.annotation.web.configurers.FormLoginConfigurer;
 import org.springframework.security.config.annotation.web.configurers.LogoutConfigurer;
@@ -31,10 +32,11 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http
+                .csrf(CsrfConfigurer::disable)
                 .authorizeHttpRequests(authorizeRequest -> authorizeRequest
                         .requestMatchers(actuatorMatchers()).hasRole("ADMIN")
-                        .requestMatchers(toolsMatchers()).hasAnyRole("ADMIN", "USER")
-//                        .requestMatchers(commentsMatchers()).hasAnyRole("ADMIN", "USER")
+                        .requestMatchers(toolsMatchers()).hasAnyRole("ADMIN", "USER", "GUEST")
+                        .requestMatchers(ratesMatchers()).hasAnyRole("ADMIN", "RATE_1")
                         .requestMatchers(publicMatchers()).permitAll()
                         .anyRequest().authenticated()
                 )
@@ -55,17 +57,15 @@ public class SecurityConfig {
 
     private String[] toolsMatchers() {
         return new String[]{
-                "/tools/create/**",
-                "/tools/update/**"
+                "/tools/**"
         };
     }
 
-//    private String[] commentsMatchers() {
-//        return new String[]{
-//                "/comments/delete/**",
-//                "/comments/update/**"
-//        };
-//    }
+    private String[] ratesMatchers() {
+        return new String[]{
+                "/rates/**"
+        };
+    }
 
     private String[] actuatorMatchers() {
         return new String[]{

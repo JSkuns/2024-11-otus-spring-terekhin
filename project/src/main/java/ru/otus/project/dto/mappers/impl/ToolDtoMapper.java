@@ -2,7 +2,7 @@ package ru.otus.project.dto.mappers.impl;
 
 import org.springframework.stereotype.Component;
 import ru.otus.project.dto.mappers.DtoMapper;
-import ru.otus.project.dto.models.tool.ToolDto;
+import ru.otus.project.dto.models.ToolDto;
 import ru.otus.project.models.Tool;
 
 @Component

@@ -31,7 +31,7 @@
         <!-- Локализация -->
         <div class="align-middle text-center">
             <a href="/locale?lang=ru" onclick="window.location.reload();" class="btn btn-info rounded-pill px-3">RU</a>
-            <a href="/locale?lang=en" onclick="window.location.reload();" class="btn btn-info rounded-pill px-3">EN</a>
+            <a href="/locale?lang=en" onclick="window.location.reload();" class="btn btn-info rounded-pill px-3">US</a>
         </div>
 
         <!-- Заголовок -->
@@ -43,7 +43,7 @@
             <div class="col">
                 <div class="card mb-4 rounded-3 shadow-sm">
                     <div class="card-header py-3">
-                        <h4 class="my-0 fw-normal">
+                        <h4 class="my-0 fw-normal" th:text="#{threads}">
                             Threads
                         </h4>
                     </div>
@@ -59,7 +59,7 @@
             <div class="col">
                 <div class="card mb-4 rounded-3 shadow-sm">
                     <div class="card-header py-3">
-                        <h4 class="my-0 fw-normal">
+                        <h4 class="my-0 fw-normal" th:text="#{tools}">
                             Tools
                         </h4>
                     </div>
@@ -75,12 +75,12 @@
             <div class="col">
                 <div class="card mb-4 rounded-3 shadow-sm">
                     <div class="card-header py-3">
-                        <h4 class="my-0 fw-normal">
-                            Machines
+                        <h4 class="my-0 fw-normal" th:text="#{equipments}">
+                            Equipments
                         </h4>
                     </div>
                     <div class="card-body">
-                        <a th:href="'machines'">
+                        <a th:href="'equipments'">
                             <button type="button" class="w-100 btn btn-lg btn-outline-primary">
                                 View list
                             </button>
@@ -91,7 +91,7 @@
             <div class="col">
                 <div class="card mb-4 rounded-3 shadow-sm">
                     <div class="card-header py-3">
-                        <h4 class="my-0 fw-normal">
+                        <h4 class="my-0 fw-normal" th:text="#{rates}">
                             Rates
                         </h4>
                     </div>
@@ -107,7 +107,8 @@
         </div>
 
         <div class="align-middle text-center">
-            Active user = <span style="color: red;" th:text="${username}"></span>
+            <span th:text="#{active.user} + ' = '">Active user = </span>
+            <span style="color: red;" th:text="${username}"></span>
         </div>
 
         <div class="align-middle text-center">

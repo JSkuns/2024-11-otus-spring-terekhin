@@ -26,36 +26,23 @@
         <!-- Хлебные крошки -->
         <ol class="breadcrumb p-3 bg-body-tertiary rounded-3">
             <li class="breadcrumb-item"><a th:href="'/'">🏠︎</a></li>
-            <li class="breadcrumb-item"><a th:href="'/genres'">Genres</a></li>
+            <li class="breadcrumb-item"><a th:href="'/rates'">Rates</a></li>
         </ol>
 
         <!-- Заголовок -->
-        <h1 class="align-middle text-center" th:text="#{project.title.short} + ' | Genres'">
-            TIS | Genres
+        <h1 class="align-middle text-center" th:text="#{project.title.short} + ' | Rates'">
+            TIS | Rates
         </h1>
 
         <hr>
+
         <div>
             <h4 class="align-middle text-center">
-                All genres
+                Founded rates
             </h4>
         </div>
-        <hr>
 
-        <table class="table table-striped table-bordered">
-            <thead class="align-middle text-center">
-            <tr>
-                <th>Genre.Id</th>
-                <th>Genre.Name</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:each="genre : ${genres}">
-                <td th:text="${genre.id}">1</td>
-                <td th:text="${genre.name}">Test genre name</td>
-            </tr>
-            </tbody>
-        </table>
+        <hr>
 
     </body>
 

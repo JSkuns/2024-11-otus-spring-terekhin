@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import ru.otus.project.dto.models.tool.ToolDto;
+import ru.otus.project.dto.models.ToolDto;
 import ru.otus.project.services.ToolsService;
 
 import java.util.List;
@@ -48,7 +48,9 @@ public class ToolsRestController {
     }
 
     // Обновление инструмента
-    @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(value = "/{id}",
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public ToolDto updateTool(@PathVariable Long id, @RequestBody ToolDto toolDto) {
         toolDto.setId(id);
@@ -57,9 +59,10 @@ public class ToolsRestController {
 
     // Удаление инструмента по ID
     @DeleteMapping(value = "/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteTool(@PathVariable Long id) {
+    @ResponseBody
+    public List<ToolDto> deleteTool(@PathVariable Long id) {
         toolsService.deleteById(id);
+        return toolsService.findAll();
     }
 
 }

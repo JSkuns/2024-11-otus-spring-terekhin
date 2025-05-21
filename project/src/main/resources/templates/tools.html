@@ -85,6 +85,44 @@
             tableBody.appendChild(row);
         }
 
+        async function deleteTool() {
+            try {
+                const id = document.getElementById('id-delete-input').value;
+                const path = `/tools/${id}`;
+                const response = await fetch(path, { method: 'DELETE' });
+                const tools = await response.json();
+                displayTools(tools);
+            } catch (error) {
+                console.error('Ошибка:', error);
+                window.location.href = "/error";
+            }
+        }
+
+        async function createTool() {
+            try {
+                const type = document.getElementById('type-input').value;
+                const diameter = document.getElementById('diameter-input').value;
+                const length = document.getElementById('length-input').value;
+                const manufacturer = document.getElementById('manufacturer-input').value;
+
+                const body = JSON.stringify({ type, diameter, length, manufacturer });
+                const options = {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body
+                };
+                const response = await fetch('/tools', options);
+                const tool = await response.json();
+                const toolsTableBody = document.querySelector('#tools-table tbody');
+                toolsTableBody.innerHTML = '';
+                displaySingleTool(tool);
+            } catch (error) {
+                console.error('Error:', error);
+                window.location.href = '/error';
+            }
+        }
 
     </script>
 
@@ -125,7 +163,7 @@
             </tbody>
         </table>
 
-        <!-- Find tool by Id -->
+        <!-- Найти инструмент по его Id -->
         <hr>
 
         <div>
@@ -143,6 +181,60 @@
             </div>
             <div>
                 <button type="button" class="btn btn-info rounded-pill px-3" onclick="findToolById()">Find</button>
+            </div>
+        </form>
+
+        <!-- Удаление инструмента по его Id -->
+        <hr>
+
+        <div>
+            <h4 class="align-middle text-center">
+                Delete Tool by Id
+            </h4>
+        </div>
+
+        <hr>
+
+        <form class="align-middle text-center">
+            <div>
+                <label for="id-delete-input">Enter the Id of the tool you want to delete -></label>
+                <input id="id-delete-input" type="text">
+            </div>
+            <div>
+                <button type="button" class="btn btn-danger rounded-pill px-3" onclick="deleteTool()">Delete</button>
+            </div>
+        </form>
+
+        <!-- Insert new book -->
+        <hr>
+
+        <div>
+            <h4 class="align-middle text-center">
+                Insert new tool
+            </h4>
+        </div>
+
+        <hr>
+
+        <form class="align-middle text-center">
+            <div>
+                <label for="type-input">Enter the type of tool -></label>
+                <input id="type-input" type="text">
+            </div>
+            <div>
+                <label for="diameter-input">Enter the diameter of tool -></label>
+                <input id="diameter-input" type="text">
+            </div>
+            <div>
+                <label for="length-input">Enter the length of tool -></label>
+                <input id="length-input" type="text">
+            </div>
+            <div>
+                <label for="manufacturer-input">Enter the manufacturer of tool -></label>
+                <input id="manufacturer-input" type="text">
+            </div>
+            <div>
+                <button type="button" class="btn btn-success rounded-pill px-3" onclick="createTool()">Add new tool</button>
             </div>
         </form>
 
