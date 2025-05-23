@@ -30,6 +30,7 @@
         <module>hw17</module>
         <module>hw18</module>
         <module>project</module>
+        <module>project-aux</module>
     </modules>
 
 </project>

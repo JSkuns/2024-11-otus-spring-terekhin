@@ -1,0 +1,9 @@
+services:
+  project-service-aux:
+    image: project-aux
+    container_name: ProjectAux
+    ports:
+      - "8081:8080"
+    build:
+      context: .
+      dockerfile: Dockerfile

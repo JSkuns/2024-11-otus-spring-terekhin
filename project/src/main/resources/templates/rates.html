@@ -36,13 +36,62 @@
 
         <hr>
 
+        <!-- -->
         <div>
             <h4 class="align-middle text-center">
-                Founded rates
+                Rate
             </h4>
         </div>
 
         <hr>
+
+        <form class="align-middle text-center">
+            <div>
+                <label for="id-find-input-tool">Enter the Id of the tool -></label>
+                <input id="id-find-input-tool" type="text">
+            </div>
+            <div>
+                <label for="id-find-input-thread">Enter the Id of the thread -></label>
+                <input id="id-find-input-thread" type="text">
+            </div>
+            <div>
+                <label for="id-find-input-equipment">Enter the Id of the equipment -></label>
+                <input id="id-find-input-equipment" type="text">
+            </div>
+            <div>
+                <button type="button" class="btn btn-info rounded-pill px-3" onclick="startRate()">Rate</button>
+            </div>
+        </form>
+
+        <!-- Блок для отображения результата -->
+        <div id="result-block" style="display:none;">
+            <h4 class="align-middle text-center">Received random value:</h4>
+            <span id="random-value"></span>
+        </div>
+
+        <script>
+            async function startRate() {
+                const firstParam = document.getElementById('id-find-input-tool').value;
+                const secondParam = document.getElementById('id-find-input-thread').value;
+
+                try {
+                    const response = await fetch(`/rates/call-random?firstParam=${firstParam}&secondParam=${secondParam}`, {
+                        method: 'GET'
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`Network response was not ok (${response.status})`);
+                    }
+
+                    const data = await response.json();
+                    document.getElementById('random-value').textContent = data;
+                    document.getElementById('result-block').style.display = 'block'; // показать блок результата
+
+                } catch (error) {
+                    alert('Error retrieving data: ' + error.message);
+                }
+            }
+        </script>
 
     </body>
 
