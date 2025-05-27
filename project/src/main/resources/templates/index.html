@@ -29,9 +29,15 @@
         </ol>
 
         <!-- Локализация -->
-        <div class="align-middle text-center">
-            <a href="/locale?lang=ru" onclick="window.location.reload();" class="btn btn-info rounded-pill px-3">RU</a>
-            <a href="/locale?lang=en" onclick="window.location.reload();" class="btn btn-info rounded-pill px-3">US</a>
+        <div class="d-flex justify-content-center align-items-center">
+            <form action="/locale" method="POST" class="me-2">
+                <input type="hidden" name="lang" value="ru">
+                <button type="submit" class="btn btn-info rounded-pill px-3">RU</button>
+            </form>
+            <form action="/locale" method="POST">
+                <input type="hidden" name="lang" value="en">
+                <button type="submit" class="btn btn-info rounded-pill px-3">US</button>
+            </form>
         </div>
 
         <!-- Заголовок -->
@@ -128,7 +134,7 @@
 
 
         <div class="align-middle text-center">
-            <a href="actuator/health">Health</a>
+            <a href="health">Health</a>
         </div>
         <div class="align-middle text-center">
             <a href="actuator/metrics">Metrics</a>

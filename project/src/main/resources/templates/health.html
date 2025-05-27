@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+
+    <head>
+        <title th:text="#{project.title}">Technical Information System</title>
+
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+        <link href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    </head>
+
+    <style>
+        h1 {
+            margin-bottom: 40px;
+            margin-top: 20px;
+        }
+        div {
+            margin-bottom: 10px;
+            margin-top: 15px;
+        }
+    </style>
+
+    <body class="container">
+
+        <!-- Хлебные крошки -->
+        <ol class="breadcrumb p-3 bg-body-tertiary rounded-3">
+            <li class="breadcrumb-item"><a th:href="'/'">🏠︎</a></li>
+            <li class="breadcrumb-item"><a th:href="'/health'">Health</a></li>
+        </ol>
+
+        <!-- Заголовок -->
+        <h1 class="align-middle text-center" th:text="#{project.title.short} + ' | Health'">
+            TIS | Health
+        </h1>
+
+        <!-- Информация о состоянии здоровья -->
+        <div class="alert alert-light border rounded my-3" role="alert">
+            <p><strong>DB Connection:</strong> <span th:text="${dbIndicator ? '✅ Up' : '❌ Down'}"></span></p>
+            <p><strong>Rate Service:</strong> <span th:text="${rateIndicator ? '✅ Up' : '❌ Down'}"></span></p>
+        </div>
+
+    </body>
+
+</html>
