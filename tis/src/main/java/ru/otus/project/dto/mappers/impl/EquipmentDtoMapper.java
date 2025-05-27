@@ -10,9 +10,6 @@ public class EquipmentDtoMapper implements DtoMapper<EquipmentDto, Equipment> {
 
     @Override
     public EquipmentDto toDto(Equipment equipment) {
-        if (equipment == null) {
-            return null;
-        }
         return EquipmentDto.builder()
                 .id(equipment.getId())
                 .type(equipment.getType()) // Тип станка
@@ -22,9 +19,6 @@ public class EquipmentDtoMapper implements DtoMapper<EquipmentDto, Equipment> {
 
     @Override
     public Equipment toModel(EquipmentDto dto) {
-        if (dto == null) {
-            return null;
-        }
         Equipment equipment = new Equipment();
         equipment.setId(dto.getId());
         equipment.setType(dto.getType()); // Устанавливаем тип станка
