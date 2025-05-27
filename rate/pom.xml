@@ -10,9 +10,9 @@
     </parent>
 
     <groupId>ru.otus.project</groupId>
-    <artifactId>project-aux</artifactId>
+    <artifactId>rate</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>project-aux</name>
+    <name>rate</name>
 
     <dependencies>
         <dependency>

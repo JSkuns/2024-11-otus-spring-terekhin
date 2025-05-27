@@ -1,7 +1,7 @@
 services:
-  project-service:
-    image: project
-    container_name: Project
+  tis-service:
+    image: tis
+    container_name: tis
     ports:
       - "8080:8080"
     build:
@@ -11,7 +11,7 @@ services:
       database-service:
         condition: service_healthy
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://database-service:5432/project_db
+      SPRING_DATASOURCE_URL: jdbc:postgresql://database-service:5432/tis_db
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: postgres
 
@@ -22,7 +22,7 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: project_db
+      POSTGRES_DB: tis_db
     ports:
       - "5432:5432"
     healthcheck:

@@ -1,0 +1,9 @@
+services:
+  rate-service:
+    image: rate
+    container_name: rate
+    ports:
+      - "8081:8081"
+    build:
+      context: .
+      dockerfile: Dockerfile
