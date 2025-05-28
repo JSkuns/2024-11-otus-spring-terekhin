@@ -44,7 +44,13 @@ public class ToolsServiceImpl implements ToolsService {
     }
 
     public ToolDto createUpdate(ToolDto toolDto) {
-        Tool tool = toolDtoMapper.toModel(toolDto);
+        var tool = toolRepository.findById(toolDto.getId())
+                .orElseThrow(() -> {
+                    var errMsg = "Tool with id %s not found".formatted(toolDto.getId());
+                    log.error(errMsg);
+                    return new NotFoundException(errMsg);
+                });
+        tool = toolDtoMapper.toModel(toolDto);
         Tool savedTool = toolRepository.save(tool);
         return toolDtoMapper.toDto(savedTool);
     }

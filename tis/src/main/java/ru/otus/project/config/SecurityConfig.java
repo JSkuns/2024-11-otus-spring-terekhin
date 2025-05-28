@@ -69,7 +69,8 @@ public class SecurityConfig {
 
     private String[] actuatorMatchers() {
         return new String[]{
-                "/actuator/**"
+                "/actuator/**",
+                "/health/**"
         };
     }
 

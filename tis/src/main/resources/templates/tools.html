@@ -124,6 +124,36 @@
             }
         }
 
+        async function updateTool() {
+            try {
+                const id = document.getElementById('id-update-input').value;
+                const type = document.getElementById('type-update-input').value;
+                const diameter = document.getElementById('diameter-update-input').value;
+                const length = document.getElementById('length-update-input').value;
+                const manufacturer = document.getElementById('manufacturer-update-input').value;
+
+                const body = JSON.stringify({ type, diameter, length, manufacturer });
+                const options = {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body
+                };
+                const path = `/tools/${id}`;
+                const response = await fetch(path, options);
+                const updatedTool = await response.json();
+
+                const tableBody = document.querySelector('#tools-table tbody');
+                tableBody.innerHTML = '';
+
+                displaySingleTool(updatedTool);
+            } catch (error) {
+                console.error('Error updating tool:', error);
+                window.location.href = '/error';
+            }
+        }
+
     </script>
 
     <body class="container" onload="getTools()">
@@ -235,6 +265,43 @@
             </div>
             <div>
                 <button type="button" class="btn btn-success rounded-pill px-3" onclick="createTool()">Add new tool</button>
+            </div>
+        </form>
+
+        <!-- Update existing tool -->
+        <hr>
+
+        <div>
+            <h4 class="align-middle text-center">
+                Update existing tool
+            </h4>
+        </div>
+
+        <hr>
+
+        <form class="align-middle text-center">
+            <div>
+                <label for="id-update-input">Enter the Id of the tool you want to update -></label>
+                <input id="id-update-input" type="text">
+            </div>
+            <div>
+                <label for="type-update-input">New type of tool -></label>
+                <input id="type-update-input" type="text">
+            </div>
+            <div>
+                <label for="diameter-update-input">New diameter of tool -></label>
+                <input id="diameter-update-input" type="text">
+            </div>
+            <div>
+                <label for="length-update-input">New length of tool -></label>
+                <input id="length-update-input" type="text">
+            </div>
+            <div>
+                <label for="manufacturer-update-input">New manufacturer of tool -></label>
+                <input id="manufacturer-update-input" type="text">
+            </div>
+            <div>
+                <button type="button" class="btn btn-warning rounded-pill px-3" onclick="updateTool()">Update tool</button>
             </div>
         </form>
 
