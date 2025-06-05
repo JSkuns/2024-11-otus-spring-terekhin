@@ -1,0 +1,55 @@
+spring:
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/tis_db
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
+
+  flyway:
+    locations: classpath:db/migration
+    enabled: true
+
+  jpa:
+    generate-ddl: false
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+    hibernate:
+      ddl-auto: update
+
+  messages:
+    basename: i18n/messages
+    encoding: UTF-8
+    cache-duration: -1
+    fallbackToSystemLocale: false
+
+  main:
+    allow-bean-definition-overriding: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, metrics, logs
+
+  endpoint:
+    health:
+      show-details: always
+
+  health:
+    diskspace:
+      enabled: false
+    db:
+      enabled: false
+    ping:
+      enabled: false
+
+
+logging:
+  file:
+    name: app.log
+
+  level:
+    root: INFO
