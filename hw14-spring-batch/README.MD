@@ -5,11 +5,11 @@
 описание подключения в src/main/java/ru/otus/hw/batch/config
 Команды:
 
-h/help\n
-g/get - получить состояние в Postgres
-cl/clear - очистка состояния в Mongo
-start - запуск миграции
-ch/check - получить состояние в Mongo
+h/help<br>
+g/get - получить состояние в Postgres<br>
+cl/clear - очистка состояния в Mongo<br>
+start - запуск миграции<br>
+ch/check - получить состояние в Mongo<br>
 
 На основе Spring Batch разработать процедуру миграции данных из реляционного хранилища в NoSQL или наоборот
 
