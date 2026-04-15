@@ -5,7 +5,7 @@
 описание подключения в src/main/java/ru/otus/hw/batch/config
 Команды:
 
-h/help
+h/help\n
 g/get - получить состояние в Postgres
 cl/clear - очистка состояния в Mongo
 start - запуск миграции
